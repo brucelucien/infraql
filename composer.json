@@ -1,27 +1,33 @@
 {
-	"keywords" : [
-		"infraphp infraql sql select jpql"
+	"keywords": [
+		"infraphp",
+		"infraql",
+		"sql",
+		"select",
+		"jpql"
 	],
-	"autoload" : {
-		"psr-4" : {
-			"InfraQL\\" : "src"
-		}
+	"autoload": {
+		"classmap": [
+			"src/"
+		]
 	},
-	"name" : "infraql/infraql",
-	"type" : "library",
-	"description" : "Inspirada no JPQL do mundo Java, o InfraQL provê uma forma de executar consultas SELECT com sintaxe semelhante àquela empregada na linguagem SQL, mas que retornam objetos da InfraPHP.",
-	"license" : "GPL-2.0-only",
-	"require" : {
-		"php" : ">=7.1"
+	"name": "infraql/infraql",
+	"type": "library",
+	"description": "Inspirada no JPQL do mundo Java, o InfraQL provê uma forma de executar consultas SELECT com sintaxe semelhante àquela empregada na linguagem SQL, mas que retornam objetos da InfraPHP.",
+	"license": "GPL-2.0-only",
+	"require": {
+		"php": ">=7.1"
 	},
-	"authors" : [{
-			"name" : "Bruce Lucien Santos Notario",
-			"email" : "brucelucien@gmail.com",
-			"homepage" : "https://github.com/brucelucien",
-			"role" : "Developer"
+	"authors": [
+		{
+			"name": "Bruce Lucien Santos Notario",
+			"email": "brucelucien@gmail.com",
+			"homepage": "https://github.com/brucelucien",
+			"role": "Developer"
 		}
 	],
-	"require-dev" : {
-		"phpunit/phpunit" : "^6"
-	}
+	"require-dev": {
+		"codeception/codeception": "^2.4"
+	},
+	"homepage": "https://github.com/brucelucien/infraql"
 }
