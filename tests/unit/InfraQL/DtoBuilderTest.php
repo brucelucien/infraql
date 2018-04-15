@@ -14,8 +14,8 @@ class DtoBuilderTest extends \Codeception\Test\Unit
             FROM
                 FakeClass\PessoaDTO
 SQL;
-        $manager = new DtoBuilder($sql);
-        $dto = $manager->gerarDto($sql);
+        $builder = new DtoBuilder($sql);
+        $dto = $builder->gerarDto($sql);
         $this->assertInstanceOf(PessoaDTO::class, $dto);
     }
 
@@ -40,8 +40,8 @@ SQL;
             FROM
                 FakeClass\PessoaDTO
 SQL;
-        $manager = new DtoBuilder($sql);
-        $dto = $manager->gerarDto($sql);
+        $builder = new DtoBuilder($sql);
+        $dto = $builder->gerarDto($sql);
         $this->assertFalse($dto->getRetTodosFoiChamado());
     }
 
@@ -53,8 +53,8 @@ SQL;
             FROM
                 FakeClass\PessoaDTO
 SQL;
-        $manager = new DtoBuilder($sql);
-        $dto = $manager->gerarDto($sql);
+        $builder = new DtoBuilder($sql);
+        $dto = $builder->gerarDto($sql);
         $this->assertTrue($dto->getRetStrNomeFoiChamado());
     }
 
@@ -66,8 +66,8 @@ SQL;
             FROM
                 FakeClass\PessoaDTO
 SQL;
-        $manager = new DtoBuilder($sql);
-        $dto = $manager->gerarDto($sql);
+        $builder = new DtoBuilder($sql);
+        $dto = $builder->gerarDto($sql);
         $this->assertTrue($dto->getRetStrSinAtivoFoiChamado());
     }
 
@@ -79,8 +79,25 @@ SQL;
             FROM
                 FakeClass\PessoaDTO
 SQL;
-        $manager = new DtoBuilder($sql);
-        $dto = $manager->gerarDto($sql);
+        $builder = new DtoBuilder($sql);
+        $dto = $builder->gerarDto($sql);
         $this->assertFalse($dto->getRetStrNomeFoiChamado());
+    }
+
+    public function testDeveExecutarRetStrSinAtivoEStrNomeQuandoFazParteDoRetorno()
+    {
+        $sql = <<<SQL
+            SELECT
+                StrSinAtivo,
+                StrNome,
+                StrSexo
+            FROM
+                FakeClass\PessoaDTO
+SQL;
+        $builder = new DtoBuilder($sql);
+        $dto = $builder->gerarDto($sql);
+        $this->assertTrue($dto->getRetStrSinAtivoFoiChamado());
+        $this->assertTrue($dto->getRetStrNomeFoiChamado());
+        $this->assertTrue($dto->getRetStrSexoFoiChamado());
     }
 }

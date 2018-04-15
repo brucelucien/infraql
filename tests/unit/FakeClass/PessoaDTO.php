@@ -10,6 +10,8 @@ class PessoaDTO
 
     private $retStrSinAtivoFoiChamado = false;
 
+    private $retStrSexoFoiChamado = false;
+
     public function retTodos()
     {
         $this->retTodosFoiChamado = true;
@@ -38,6 +40,16 @@ class PessoaDTO
     public function getRetStrSinAtivoFoiChamado()
     {
         return $this->retStrSinAtivoFoiChamado;
+    }
+
+    public function retStrSexo()
+    {
+        $this->retStrSexoFoiChamado = true;
+    }
+
+    public function getRetStrSexoFoiChamado()
+    {
+        return $this->retStrSexoFoiChamado;
     }
 }
 
