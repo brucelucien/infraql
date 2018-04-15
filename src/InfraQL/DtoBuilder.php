@@ -13,10 +13,20 @@ class DtoBuilder
         $nomeDto = preg_replace("/.{0,}FROM {0,}/", " ", $sqlSemEspacosAdicionais);
         // Criando DTO
         eval('$dto = new ' . $nomeDto . '();');
-        // Verificando se existe asterisco como campo na consulta
-        $existeAsterisco = strpos($sqlSemEspacosAdicionais, "SELECT * FROM") != false;
-        if ($existeAsterisco) {
-            $dto->retTodos();
+        // Identificando campos a retornar
+        $strCamposARetornar = preg_replace("/SELECT | FROM .{1,}/", " ", $sqlSemEspacosAdicionais);
+        $strCamposARetornar = trim($strCamposARetornar);
+        $camposARetornar = explode(",", $strCamposARetornar);
+        $aplicarTrim = function ($campo) {
+            return trim($campo);
+        };
+        $camposARetornar = array_map($aplicarTrim, $camposARetornar);
+        foreach ($camposARetornar as $campo) {
+            if ($campo == '*') {
+                $dto->retTodos();
+            } else {
+                eval('$dto->ret' . $campo . '();');
+            }
         }
         return $dto;
     }
