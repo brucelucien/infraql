@@ -13,11 +13,16 @@ class DtoBuilder
         $nomeDto = preg_replace("/.{0,}FROM {0,}/", " ", $sqlSemEspacosAdicionais);
         // Criando DTO
         eval('$dto = new ' . $nomeDto . '();');
-        // Verificando se existe asterisco como campo na consulta
-        $existeAsterisco = strpos($sqlSemEspacosAdicionais, "SELECT * FROM") != false;
-        if ($existeAsterisco) {
+        
+        $nomeCampo = preg_replace("/SELECT | FROM .{1,}/", " ", $sqlSemEspacosAdicionais);
+        $nomeCampo = trim($nomeCampo);
+        
+        if ($nomeCampo == '*') {
             $dto->retTodos();
+        } else {
+            eval('$dto->ret' . $nomeCampo . '();');
         }
+        
         return $dto;
     }
 }
