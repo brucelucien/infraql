@@ -13,8 +13,12 @@ class DtoBuilder
         $nomeDto = preg_replace("/.{0,}FROM {0,}/", " ", $sqlSemEspacosAdicionais);
         // Criando DTO
         eval('$dto = new ' . $nomeDto . '();');
+        // Verificando necessidade de distinct
+        if (strpos($sqlSemEspacosAdicionais, "SELECT DISTINCT")) {
+            $dto->setDistinct(true);
+        }
         // Identificando campos a retornar
-        $strCamposARetornar = preg_replace("/SELECT | FROM .{1,}/", " ", $sqlSemEspacosAdicionais);
+        $strCamposARetornar = preg_replace("/SELECT (DISTINCT)?| FROM .{1,}/", " ", $sqlSemEspacosAdicionais);
         $strCamposARetornar = trim($strCamposARetornar);
         $camposARetornar = explode(",", $strCamposARetornar);
         $aplicarTrim = function ($campo) {
