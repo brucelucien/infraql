@@ -8,93 +8,93 @@ class DtoBuilderTest extends \Codeception\Test\Unit
 
     public function testDeveRetornarODtoInformadoNoFrom()
     {
-        $sql = <<<SQL
+        $query = <<<QUERY
             SELECT
                 *
             FROM
                 FakeClass\PessoaDTO
-SQL;
-        $builder = new DtoBuilder($sql);
+QUERY;
+        $builder = new DtoBuilder($query);
         $dto = $builder->gerarDto();
         $this->assertInstanceOf(PessoaDTO::class, $dto);
     }
 
     public function testDeveExecutarRetTodosQuandoAsteriscoNoSelect()
     {
-        $sql = <<<SQL
+        $query = <<<QUERY
             SELECT
                 *
             FROM
                 FakeClass\PessoaDTO
-SQL;
-        $manager = new DtoBuilder($sql);
-        $dto = $manager->gerarDto($sql);
+QUERY;
+        $manager = new DtoBuilder($query);
+        $dto = $manager->gerarDto($query);
         $this->assertTrue($dto->getRetTodosFoiChamado());
     }
 
     public function testNaoDeveExecutarRetTodosQuandoNaoHaAsteriscoNoSelect()
     {
-        $sql = <<<SQL
+        $query = <<<QUERY
             SELECT
                 StrNome
             FROM
                 FakeClass\PessoaDTO
-SQL;
-        $builder = new DtoBuilder($sql);
+QUERY;
+        $builder = new DtoBuilder($query);
         $dto = $builder->gerarDto();
         $this->assertFalse($dto->getRetTodosFoiChamado());
     }
 
     public function testDeveExecutarRetStrNomeQuandoFazParteDoRetorno()
     {
-        $sql = <<<SQL
+        $query = <<<QUERY
             SELECT
                 StrNome
             FROM
                 FakeClass\PessoaDTO
-SQL;
-        $builder = new DtoBuilder($sql);
+QUERY;
+        $builder = new DtoBuilder($query);
         $dto = $builder->gerarDto();
         $this->assertTrue($dto->getRetStrNomeFoiChamado());
     }
 
     public function testDeveExecutarRetStrSinAtivoQuandoFazParteDoRetorno()
     {
-        $sql = <<<SQL
+        $query = <<<QUERY
             SELECT
                 StrSinAtivo
             FROM
                 FakeClass\PessoaDTO
-SQL;
-        $builder = new DtoBuilder($sql);
+QUERY;
+        $builder = new DtoBuilder($query);
         $dto = $builder->gerarDto();
         $this->assertTrue($dto->getRetStrSinAtivoFoiChamado());
     }
 
     public function testNaoDeveExecutarStrNomeQuandoNaoFazParteDoRetorno()
     {
-        $sql = <<<SQL
+        $query = <<<QUERY
             SELECT
                 StrSinAtivo
             FROM
                 FakeClass\PessoaDTO
-SQL;
-        $builder = new DtoBuilder($sql);
+QUERY;
+        $builder = new DtoBuilder($query);
         $dto = $builder->gerarDto();
         $this->assertFalse($dto->getRetStrNomeFoiChamado());
     }
 
     public function testDeveExecutarRetStrSinAtivoEStrNomeERetStrSexoQuandoFazParteDoRetorno()
     {
-        $sql = <<<SQL
+        $query = <<<QUERY
             SELECT
                 StrSinAtivo,
                 StrNome,
                 StrSexo
             FROM
                 FakeClass\PessoaDTO
-SQL;
-        $builder = new DtoBuilder($sql);
+QUERY;
+        $builder = new DtoBuilder($query);
         $dto = $builder->gerarDto();
         $this->assertTrue($dto->getRetStrSinAtivoFoiChamado());
         $this->assertTrue($dto->getRetStrNomeFoiChamado());
@@ -103,28 +103,28 @@ SQL;
 
     public function testDeveExecutarSetDistinctParaSelectDeUmCampo()
     {
-        $sql = <<<SQL
+        $query = <<<QUERY
             SELECT DISTINCT
                 StrSinAtivo
             FROM
                 FakeClass\PessoaDTO
-SQL;
-        $builder = new DtoBuilder($sql);
+QUERY;
+        $builder = new DtoBuilder($query);
         $dto = $builder->gerarDto();
         $this->assertTrue($dto->getSetDistinctFoiChamado());
     }
 
     public function testDeveIdentificarDistinctComMaisDeUmCampoNoSelect()
     {
-        $sql = <<<SQL
+        $query = <<<QUERY
             SELECT DISTINCT
                 StrSinAtivo,
                 StrNome,
                 StrSexo
             FROM
                 FakeClass\PessoaDTO
-SQL;
-        $builder = new DtoBuilder($sql);
+QUERY;
+        $builder = new DtoBuilder($query);
         $dto = $builder->gerarDto();
         $this->assertTrue($dto->getRetStrSinAtivoFoiChamado());
         $this->assertTrue($dto->getRetStrNomeFoiChamado());
@@ -134,30 +134,30 @@ SQL;
 
     public function testDeveIdentificarAtribuicaoSimplesTipoStringNoWhere()
     {
-        $sql = <<<SQL
+        $query = <<<QUERY
             SELECT
                 StrNome
             FROM
                 FakeClass\PessoaDTO
             WHERE
                 StrSinAtivo = 'S'
-SQL;
-        $builder = new DtoBuilder($sql);
+QUERY;
+        $builder = new DtoBuilder($query);
         $dto = $builder->gerarDto();
         $this->assertEquals('S', $dto->getStrSinAtivo());
     }
 
     public function testDeveIdentificarAtribuicaoSimplesTipoNumeroNoWhere()
     {
-        $sql = <<<SQL
+        $query = <<<QUERY
             SELECT
                 StrNome
             FROM
                 FakeClass\PessoaDTO
             WHERE
                 NumIdade = 42
-SQL;
-        $builder = new DtoBuilder($sql);
+QUERY;
+        $builder = new DtoBuilder($query);
         $dto = $builder->gerarDto();
         $this->assertEquals(42, $dto->getNumIdade());
     }
