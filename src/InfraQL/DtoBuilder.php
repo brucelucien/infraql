@@ -13,12 +13,12 @@ class DtoBuilder
     public function __construct($infraQuery)
     {
         $this->infraQuery = $infraQuery;
-        $this->retirarDaQueryEspacosAdicionaisEQuebrasDeLinhaha();
+        $this->retirarDaQueryEspacosAdicionaisEQuebrasDeLinha();
         $this->extrairNomeDto();
         $this->extrairCamposARetornar();
     }
 
-    private function retirarDaQueryEspacosAdicionaisEQuebrasDeLinhaha()
+    private function retirarDaQueryEspacosAdicionaisEQuebrasDeLinha()
     {
         $querySemQuebrasDeLinha = preg_replace("/\r|\n/", "", $this->infraQuery);
         $querySemEspacosAdicionais = preg_replace("/ {1,}/", " ", $querySemQuebrasDeLinha);
@@ -44,6 +44,7 @@ class DtoBuilder
 
     public function gerarDto()
     {
+        // TODO Excluir todos os comentários após concluir a versão básica do DtoBuilder de forma a tornar o código mais legível.
         $dto = null;
         // Criando DTO
         eval('$dto = new ' . $this->nomeDto . '();');
