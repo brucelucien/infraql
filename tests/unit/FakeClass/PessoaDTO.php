@@ -12,6 +12,8 @@ class PessoaDTO
 
     private $retStrSexoFoiChamado = false;
 
+    private $setDistinctFoiChamado = false;
+
     public function retTodos()
     {
         $this->retTodosFoiChamado = true;
@@ -50,6 +52,16 @@ class PessoaDTO
     public function getRetStrSexoFoiChamado()
     {
         return $this->retStrSexoFoiChamado;
+    }
+
+    public function setDistinct($parametro) // TODO Encontrar o significado do parâmetro do 'setDistinct'!!!! ...para ajustar o nome dele aqui!
+    {
+        $this->setDistinctFoiChamado = true;
+    }
+
+    public function getSetDistinctFoiChamado()
+    {
+        return $this->setDistinctFoiChamado;
     }
 }
 
