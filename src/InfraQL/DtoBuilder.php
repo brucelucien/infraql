@@ -4,29 +4,55 @@ namespace InfraQL;
 class DtoBuilder
 {
 
-    public function gerarDto($sql)
+    private $infraQuery = "";
+
+    private $nomeDto = "";
+
+    private $camposARetornar = array();
+
+    public function __construct($infraQuery)
     {
-        $dto = null;
-        $sqlSemQuebrasDeLinha = preg_replace("/\r|\n/", "", $sql);
-        $sqlSemEspacosAdicionais = preg_replace("/ {1,}/", " ", $sqlSemQuebrasDeLinha);
-        // Extraindo nome do DTO
-        $nomeDto = preg_replace("/.{0,}FROM {1,}/", " ", $sqlSemEspacosAdicionais);
-        $nomeDto = preg_replace("/ {0,}WHERE.{1,}/", " ", $nomeDto);
-        // Criando DTO
-        eval('$dto = new ' . $nomeDto . '();');
-        // Verificando necessidade de distinct
-        if (strpos($sqlSemEspacosAdicionais, "SELECT DISTINCT")) {
-            $dto->setDistinct(true); // TODO Encontrar o significado do parâmetro do 'setDistinct'!!!! ...para ajustar o nome dele!
-        }
-        // Identificando campos a retornar
-        $strCamposARetornar = preg_replace("/SELECT (DISTINCT)?| FROM .{1,}/", " ", $sqlSemEspacosAdicionais);
+        $this->infraQuery = $infraQuery;
+        $this->retirarDaQueryEspacosAdicionaisEQuebrasDeLinhaha();
+        $this->extrairNomeDto();
+        $this->extrairCamposARetornar();
+    }
+
+    private function retirarDaQueryEspacosAdicionaisEQuebrasDeLinhaha()
+    {
+        $querySemQuebrasDeLinha = preg_replace("/\r|\n/", "", $this->infraQuery);
+        $querySemEspacosAdicionais = preg_replace("/ {1,}/", " ", $querySemQuebrasDeLinha);
+        $this->infraQuery = $querySemEspacosAdicionais;
+    }
+
+    private function extrairNomeDto()
+    {
+        $this->nomeDto = preg_replace("/.{0,}FROM {1,}/", " ", $this->infraQuery);
+        $this->nomeDto = preg_replace("/ {0,}WHERE.{1,}/", " ", $this->nomeDto);
+    }
+
+    private function extrairCamposARetornar()
+    {
+        $strCamposARetornar = preg_replace("/SELECT (DISTINCT)?| FROM .{1,}/", " ", $this->infraQuery);
         $strCamposARetornar = trim($strCamposARetornar);
-        $camposARetornar = explode(",", $strCamposARetornar);
+        $this->camposARetornar = explode(",", $strCamposARetornar);
         $aplicarTrim = function ($campo) {
             return trim($campo);
         };
-        $camposARetornar = array_map($aplicarTrim, $camposARetornar);
-        foreach ($camposARetornar as $campo) {
+        $this->camposARetornar = array_map($aplicarTrim, $this->camposARetornar);
+    }
+
+    public function gerarDto()
+    {
+        $dto = null;
+        // Criando DTO
+        eval('$dto = new ' . $this->nomeDto . '();');
+        // Verificando necessidade de distinct
+        if (strpos($this->infraQuery, "SELECT DISTINCT")) {
+            $dto->setDistinct(true); // TODO Encontrar o significado do parâmetro do 'setDistinct'!!!! ...para ajustar o nome dele!
+        }
+        // Assegurando chamada a campos que devem ser retornados
+        foreach ($this->camposARetornar as $campo) {
             if ($campo == '*') {
                 $dto->retTodos();
             } else {
@@ -34,8 +60,8 @@ class DtoBuilder
             }
         }
         // Identificando condições no WHERE
-        if (strpos($sqlSemEspacosAdicionais, " WHERE ")) {
-            $condicao = trim(preg_replace("/.{0,}WHERE {1,}/", " ", $sqlSemEspacosAdicionais));
+        if (strpos($this->infraQuery, " WHERE ")) { // TODO A extração das condições deve ser efetuada no construtor. Aqui só serão deixadas as chamadas ao DTO.
+            $condicao = trim(preg_replace("/.{0,}WHERE {1,}/", " ", $this->infraQuery));
             $campoCondicao = trim(preg_replace("/( |=){1,}.{0,}/", "", $condicao));
             $valorCondicao = trim(preg_replace("/.{0,}( |=){1,}/", "", $condicao));
             eval('$dto->set' . $campoCondicao . '(' . $valorCondicao . ');');
