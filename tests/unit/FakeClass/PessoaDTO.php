@@ -14,6 +14,10 @@ class PessoaDTO
 
     private $setDistinctFoiChamado = false;
 
+    private $strSinAtivo = '';
+
+    private $numIdade = 0;
+
     public function retTodos()
     {
         $this->retTodosFoiChamado = true;
@@ -62,6 +66,26 @@ class PessoaDTO
     public function getSetDistinctFoiChamado()
     {
         return $this->setDistinctFoiChamado;
+    }
+
+    public function getStrSinAtivo()
+    {
+        return $this->strSinAtivo;
+    }
+
+    public function setStrSinAtivo($strSinAtivo)
+    {
+        $this->strSinAtivo = $strSinAtivo;
+    }
+
+    public function getNumIdade()
+    {
+        return $this->numIdade;
+    }
+
+    public function setNumIdade($numIdade)
+    {
+        $this->numIdade = $numIdade;
     }
 }
 

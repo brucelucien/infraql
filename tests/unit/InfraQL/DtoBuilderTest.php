@@ -131,4 +131,34 @@ SQL;
         $this->assertTrue($dto->getRetStrSexoFoiChamado());
         $this->assertTrue($dto->getSetDistinctFoiChamado());
     }
+
+    public function testDeveIdentificarAtribuicaoSimplesTipoStringNoWhere()
+    {
+        $sql = <<<SQL
+            SELECT
+                StrNome
+            FROM
+                FakeClass\PessoaDTO
+            WHERE
+                StrSinAtivo = 'S'
+SQL;
+        $builder = new DtoBuilder($sql);
+        $dto = $builder->gerarDto($sql);
+        $this->assertEquals('S', $dto->getStrSinAtivo());
+    }
+
+    public function testDeveIdentificarAtribuicaoSimplesTipoNumeroNoWhere()
+    {
+        $sql = <<<SQL
+            SELECT
+                StrNome
+            FROM
+                FakeClass\PessoaDTO
+            WHERE
+                NumIdade = 42
+SQL;
+        $builder = new DtoBuilder($sql);
+        $dto = $builder->gerarDto($sql);
+        $this->assertEquals(42, $dto->getNumIdade());
+    }
 }
