@@ -15,7 +15,7 @@ class DtoBuilderTest extends \Codeception\Test\Unit
                 FakeClass\PessoaDTO
 SQL;
         $builder = new DtoBuilder($sql);
-        $dto = $builder->gerarDto($sql);
+        $dto = $builder->gerarDto();
         $this->assertInstanceOf(PessoaDTO::class, $dto);
     }
 
@@ -41,7 +41,7 @@ SQL;
                 FakeClass\PessoaDTO
 SQL;
         $builder = new DtoBuilder($sql);
-        $dto = $builder->gerarDto($sql);
+        $dto = $builder->gerarDto();
         $this->assertFalse($dto->getRetTodosFoiChamado());
     }
 
@@ -54,7 +54,7 @@ SQL;
                 FakeClass\PessoaDTO
 SQL;
         $builder = new DtoBuilder($sql);
-        $dto = $builder->gerarDto($sql);
+        $dto = $builder->gerarDto();
         $this->assertTrue($dto->getRetStrNomeFoiChamado());
     }
 
@@ -67,7 +67,7 @@ SQL;
                 FakeClass\PessoaDTO
 SQL;
         $builder = new DtoBuilder($sql);
-        $dto = $builder->gerarDto($sql);
+        $dto = $builder->gerarDto();
         $this->assertTrue($dto->getRetStrSinAtivoFoiChamado());
     }
 
@@ -80,7 +80,7 @@ SQL;
                 FakeClass\PessoaDTO
 SQL;
         $builder = new DtoBuilder($sql);
-        $dto = $builder->gerarDto($sql);
+        $dto = $builder->gerarDto();
         $this->assertFalse($dto->getRetStrNomeFoiChamado());
     }
 
@@ -95,7 +95,7 @@ SQL;
                 FakeClass\PessoaDTO
 SQL;
         $builder = new DtoBuilder($sql);
-        $dto = $builder->gerarDto($sql);
+        $dto = $builder->gerarDto();
         $this->assertTrue($dto->getRetStrSinAtivoFoiChamado());
         $this->assertTrue($dto->getRetStrNomeFoiChamado());
         $this->assertTrue($dto->getRetStrSexoFoiChamado());
@@ -110,7 +110,7 @@ SQL;
                 FakeClass\PessoaDTO
 SQL;
         $builder = new DtoBuilder($sql);
-        $dto = $builder->gerarDto($sql);
+        $dto = $builder->gerarDto();
         $this->assertTrue($dto->getSetDistinctFoiChamado());
     }
 
@@ -125,7 +125,7 @@ SQL;
                 FakeClass\PessoaDTO
 SQL;
         $builder = new DtoBuilder($sql);
-        $dto = $builder->gerarDto($sql);
+        $dto = $builder->gerarDto();
         $this->assertTrue($dto->getRetStrSinAtivoFoiChamado());
         $this->assertTrue($dto->getRetStrNomeFoiChamado());
         $this->assertTrue($dto->getRetStrSexoFoiChamado());
@@ -143,7 +143,7 @@ SQL;
                 StrSinAtivo = 'S'
 SQL;
         $builder = new DtoBuilder($sql);
-        $dto = $builder->gerarDto($sql);
+        $dto = $builder->gerarDto();
         $this->assertEquals('S', $dto->getStrSinAtivo());
     }
 
@@ -158,7 +158,7 @@ SQL;
                 NumIdade = 42
 SQL;
         $builder = new DtoBuilder($sql);
-        $dto = $builder->gerarDto($sql);
+        $dto = $builder->gerarDto();
         $this->assertEquals(42, $dto->getNumIdade());
     }
 }
