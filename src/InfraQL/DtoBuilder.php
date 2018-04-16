@@ -15,7 +15,7 @@ class DtoBuilder
         eval('$dto = new ' . $nomeDto . '();');
         // Verificando necessidade de distinct
         if (strpos($sqlSemEspacosAdicionais, "SELECT DISTINCT")) {
-            $dto->setDistinct(true);
+            $dto->setDistinct(true);  // TODO Encontrar o significado do parâmetro do 'setDistinct'!!!! ...para ajustar o nome dele!
         }
         // Identificando campos a retornar
         $strCamposARetornar = preg_replace("/SELECT (DISTINCT)?| FROM .{1,}/", " ", $sqlSemEspacosAdicionais);

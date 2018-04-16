@@ -100,7 +100,7 @@ SQL;
         $this->assertTrue($dto->getRetStrNomeFoiChamado());
         $this->assertTrue($dto->getRetStrSexoFoiChamado());
     }
-    
+
     public function testDeveExecutarSetDistinctParaSelectDeUmCampo()
     {
         $sql = <<<SQL
@@ -111,6 +111,24 @@ SQL;
 SQL;
         $builder = new DtoBuilder($sql);
         $dto = $builder->gerarDto($sql);
+        $this->assertTrue($dto->getSetDistinctFoiChamado());
+    }
+
+    public function testDeveIdentificarDistinctComMaisDeUmCampoNoSelect()
+    {
+        $sql = <<<SQL
+            SELECT DISTINCT
+                StrSinAtivo,
+                StrNome,
+                StrSexo
+            FROM
+                FakeClass\PessoaDTO
+SQL;
+        $builder = new DtoBuilder($sql);
+        $dto = $builder->gerarDto($sql);
+        $this->assertTrue($dto->getRetStrSinAtivoFoiChamado());
+        $this->assertTrue($dto->getRetStrNomeFoiChamado());
+        $this->assertTrue($dto->getRetStrSexoFoiChamado());
         $this->assertTrue($dto->getSetDistinctFoiChamado());
     }
 }
