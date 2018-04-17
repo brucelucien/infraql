@@ -3,7 +3,7 @@ namespace InfraQL;
 
 use FakeClass\PessoaDTO;
 
-class DtoBuilderTest extends \Codeception\Test\Unit
+class DtoBuilderSelectBasicoTest extends \Codeception\Test\Unit
 {
 
     public function testDeveRetornarODtoInformadoNoFrom()
@@ -132,33 +132,4 @@ QUERY;
         $this->assertTrue($dto->getSetDistinctFoiChamado());
     }
 
-    public function testDeveIdentificarAtribuicaoSimplesTipoStringNoWhere()
-    {
-        $query = <<<QUERY
-            SELECT
-                StrNome
-            FROM
-                FakeClass\PessoaDTO
-            WHERE
-                StrSinAtivo = 'S'
-QUERY;
-        $builder = new DtoBuilder($query);
-        $dto = $builder->gerarDto();
-        $this->assertEquals('S', $dto->getStrSinAtivo());
-    }
-
-    public function testDeveIdentificarAtribuicaoSimplesTipoNumeroNoWhere()
-    {
-        $query = <<<QUERY
-            SELECT
-                StrNome
-            FROM
-                FakeClass\PessoaDTO
-            WHERE
-                NumIdade = 42
-QUERY;
-        $builder = new DtoBuilder($query);
-        $dto = $builder->gerarDto();
-        $this->assertEquals(42, $dto->getNumIdade());
-    }
 }

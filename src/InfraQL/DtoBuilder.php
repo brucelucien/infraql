@@ -10,9 +10,11 @@ class DtoBuilder
 
     private $camposARetornar = array();
 
-    public function __construct($infraQuery)
+    private $parametros = array();
+
+    public function __construct($strInfraQuery)
     {
-        $this->infraQuery = $infraQuery;
+        $this->infraQuery = $strInfraQuery;
         $this->retirarDaQueryEspacosAdicionaisEQuebrasDeLinha();
         $this->extrairNomeDto();
         $this->extrairCamposARetornar();
@@ -65,9 +67,21 @@ class DtoBuilder
             $condicao = trim(preg_replace("/.{0,}WHERE {1,}/", " ", $this->infraQuery));
             $campoCondicao = trim(preg_replace("/( |=){1,}.{0,}/", "", $condicao));
             $valorCondicao = trim(preg_replace("/.{0,}( |=){1,}/", "", $condicao));
+            if (strpos($valorCondicao, ":") === 0) {
+                $valorCondicao = $this->parametros[substr($valorCondicao, 1)];
+            }
             eval('$dto->set' . $campoCondicao . '(' . $valorCondicao . ');');
         }
         return $dto;
+    }
+
+    public function setParam($strNomeParametro, $valorQualquer)
+    {
+        if (strpos($strNomeParametro, ":") === 0) {
+            $this->parametros[substr($strNomeParametro, 1)] = $valorQualquer;
+        } else {
+            $this->parametros[$strNomeParametro] = $valorQualquer;
+        }
     }
 }
 
