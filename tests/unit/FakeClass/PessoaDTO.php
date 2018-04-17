@@ -18,6 +18,10 @@ class PessoaDTO
 
     private $numIdade = 0;
 
+    private $strCpf = '';
+
+    private $strCorPreferida = '';
+
     public function retTodos()
     {
         $this->retTodosFoiChamado = true;
@@ -58,7 +62,7 @@ class PessoaDTO
         return $this->retStrSexoFoiChamado;
     }
 
-    public function setDistinct($parametro) // TODO Encontrar o significado do parâmetro do 'setDistinct'!!!! ...para ajustar o nome dele aqui!
+    public function setDistinct($bolDeveUsarDistinctNaQuery)
     {
         $this->setDistinctFoiChamado = true;
     }
@@ -86,6 +90,26 @@ class PessoaDTO
     public function setNumIdade($numIdade)
     {
         $this->numIdade = $numIdade;
+    }
+
+    public function getStrCpf()
+    {
+        return $this->strCpf;
+    }
+
+    public function setStrCpf($strCpf)
+    {
+        $this->strCpf = $strCpf;
+    }
+
+    public function getStrCorPreferida()
+    {
+        return $this->strCorPreferida;
+    }
+
+    public function setStrCorPreferida($strCorPreferida)
+    {
+        $this->strCorPreferida = $strCorPreferida;
     }
 }
 
