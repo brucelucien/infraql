@@ -4,13 +4,31 @@ namespace InfraQL;
 class DtoBuilder
 {
 
+    const DEVE_USAR_DISTINCT = true;
+
+    const ER_CONDICAO = "/'?\b[^ ]{1,}\b'? {0,}= {0,}:?'?\b[^ ]{1,}\b'?/";
+
+    const ER_CONDICAO_CAMPO = "/( |=){1,}.{0,}/";
+
+    const ER_CONDICAO_VALOR = "/.{0,}( |=){1,}/";
+
+    const ER_QUEBRAS_DE_LINHA = "/\r|\n/";
+
+    const ER_ESPACOS_DUPLICADOS = "/ {1,}/";
+
+    const ER_CONTEUDO_ANTES_DO_DTO = "/.{0,}FROM {1,}/";
+
+    const ER_CONTEUDO_APOS_O_DTO = "/ {0,}WHERE.{1,}/";
+
+    const ER_TUDO_QUE_NAO_FOR_CAMPO = "/SELECT (DISTINCT)?| FROM .{1,}/";
+
     private $infraQuery = "";
 
-    private $nomeDto = "";
+    private $strNomeDto = "";
 
-    private $camposARetornar = array();
+    private $arrCamposARetornar = array();
 
-    private $parametros = array();
+    private $arrParametrosInformados = array();
 
     public function __construct($strInfraQuery)
     {
@@ -22,65 +40,68 @@ class DtoBuilder
 
     private function retirarDaQueryEspacosAdicionaisEQuebrasDeLinha()
     {
-        $querySemQuebrasDeLinha = preg_replace("/\r|\n/", "", $this->infraQuery);
-        $querySemEspacosAdicionais = preg_replace("/ {1,}/", " ", $querySemQuebrasDeLinha);
+        $querySemQuebrasDeLinha = preg_replace(self::ER_QUEBRAS_DE_LINHA, "", $this->infraQuery);
+        $querySemEspacosAdicionais = preg_replace(self::ER_ESPACOS_DUPLICADOS, " ", $querySemQuebrasDeLinha);
         $this->infraQuery = $querySemEspacosAdicionais;
     }
 
     private function extrairNomeDto()
     {
-        $this->nomeDto = preg_replace("/.{0,}FROM {1,}/", " ", $this->infraQuery);
-        $this->nomeDto = preg_replace("/ {0,}WHERE.{1,}/", " ", $this->nomeDto);
+        $this->strNomeDto = preg_replace(self::ER_CONTEUDO_ANTES_DO_DTO, " ", $this->infraQuery);
+        $this->strNomeDto = preg_replace(self::ER_CONTEUDO_APOS_O_DTO, " ", $this->strNomeDto);
     }
 
     private function extrairCamposARetornar()
     {
-        $strCamposARetornar = preg_replace("/SELECT (DISTINCT)?| FROM .{1,}/", " ", $this->infraQuery);
+        $strCamposARetornar = preg_replace(self::ER_TUDO_QUE_NAO_FOR_CAMPO, " ", $this->infraQuery);
         $strCamposARetornar = trim($strCamposARetornar);
-        $this->camposARetornar = explode(",", $strCamposARetornar);
+        $this->arrCamposARetornar = explode(",", $strCamposARetornar);
         $aplicarTrim = function ($campo) {
             return trim($campo);
         };
-        $this->camposARetornar = array_map($aplicarTrim, $this->camposARetornar);
+        $this->arrCamposARetornar = array_map($aplicarTrim, $this->arrCamposARetornar);
     }
 
     public function gerarDto()
     {
         // TODO Excluir todos os comentários após concluir a versão básica do DtoBuilder de forma a tornar o código mais legível.
-        $dto = null;
+        $objDto = null;
         // Criando DTO
-        eval('$dto = new ' . $this->nomeDto . '();');
+        eval('$objDto = new ' . $this->strNomeDto . '();');
         // Verificando necessidade de distinct
         if (strpos($this->infraQuery, "SELECT DISTINCT")) {
-            $dto->setDistinct(true); // TODO Encontrar o significado do parâmetro do 'setDistinct'!!!! ...para ajustar o nome dele!
+            $objDto->setDistinct(self::DEVE_USAR_DISTINCT);
         }
         // Assegurando chamada a campos que devem ser retornados
-        foreach ($this->camposARetornar as $campo) {
-            if ($campo == '*') {
-                $dto->retTodos();
+        foreach ($this->arrCamposARetornar as $strCampo) {
+            if ($strCampo == '*') {
+                $objDto->retTodos();
             } else {
-                eval('$dto->ret' . $campo . '();');
+                eval('$objDto->ret' . $strCampo . '();');
             }
         }
         // Identificando condições no WHERE
         if (strpos($this->infraQuery, " WHERE ")) { // TODO A extração das condições deve ser efetuada no construtor. Aqui só serão deixadas as chamadas ao DTO.
-            $condicao = trim(preg_replace("/.{0,}WHERE {1,}/", " ", $this->infraQuery));
-            $campoCondicao = trim(preg_replace("/( |=){1,}.{0,}/", "", $condicao));
-            $valorCondicao = trim(preg_replace("/.{0,}( |=){1,}/", "", $condicao));
-            if (strpos($valorCondicao, ":") === 0) {
-                $valorCondicao = $this->parametros[substr($valorCondicao, 1)];
+            $arrCondicoes = null;
+            preg_match_all(self::ER_CONDICAO, $this->infraQuery, $arrCondicoes);
+            foreach ($arrCondicoes[0] as $condicao) {
+                $strCampoCondicao = trim(preg_replace(self::ER_CONDICAO_CAMPO, "", $condicao));
+                $strValorCondicao = trim(preg_replace(self::ER_CONDICAO_VALOR, "", $condicao));
+                if (strpos($strValorCondicao, ":") === 0) {
+                    $strValorCondicao = $this->arrParametrosInformados[substr($strValorCondicao, 1)];
+                }
+                eval('$objDto->set' . $strCampoCondicao . '(' . $strValorCondicao . ');');
             }
-            eval('$dto->set' . $campoCondicao . '(' . $valorCondicao . ');');
         }
-        return $dto;
+        return $objDto;
     }
 
     public function setParam($strNomeParametro, $valorQualquer)
     {
         if (strpos($strNomeParametro, ":") === 0) {
-            $this->parametros[substr($strNomeParametro, 1)] = $valorQualquer;
+            $this->arrParametrosInformados[substr($strNomeParametro, 1)] = $valorQualquer;
         } else {
-            $this->parametros[$strNomeParametro] = $valorQualquer;
+            $this->arrParametrosInformados[$strNomeParametro] = $valorQualquer;
         }
     }
 }

@@ -131,5 +131,4 @@ QUERY;
         $this->assertTrue($dto->getRetStrSexoFoiChamado());
         $this->assertTrue($dto->getSetDistinctFoiChamado());
     }
-
 }

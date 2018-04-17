@@ -50,7 +50,7 @@ QUERY;
         $dto = $builder->gerarDto();
         $this->assertEquals($numIdade, $dto->getNumIdade());
     }
-    
+
     public function testDeveSerPossivelUsarUmParametroComDoisPontosNaQuery()
     {
         $query = <<<QUERY
@@ -67,4 +67,24 @@ QUERY;
         $dto = $builder->gerarDto();
         $this->assertEquals($numIdade, $dto->getNumIdade());
     }
+
+    public function testDeveIdentificarUmAndEDoisParametros()
+    {
+        $query = <<<QUERY
+            SELECT
+                StrNome
+            FROM
+                FakeClass\PessoaDTO
+            WHERE
+                NumIdade = 42
+                AND StrCpf = '99988877766'
+                AND StrCorPreferida = 'Azul'
+QUERY;
+        $builder = new DtoBuilder($query);
+        $dto = $builder->gerarDto();
+        $this->assertEquals(42, $dto->getNumIdade());
+        $this->assertEquals('99988877766', $dto->getStrCpf());
+        $this->assertEquals('Azul', $dto->getStrCorPreferida());
+    }
 }
+
