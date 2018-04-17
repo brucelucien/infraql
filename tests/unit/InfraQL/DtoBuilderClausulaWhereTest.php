@@ -86,5 +86,34 @@ QUERY;
         $this->assertEquals('99988877766', $dto->getStrCpf());
         $this->assertEquals('Azul', $dto->getStrCorPreferida());
     }
+    
+    
+    public function testDeveMapearOperadorLogicoOr()
+    {
+        $query = <<<QUERY
+            SELECT
+                *
+            FROM
+                FakeClass\LocalInstalacaoEprocDTO
+            WHERE
+                StrSigUf <> 'RS'
+                OR StrTipoContexto <> 'D'
+                OR StrTipoInstancia <> 'EST1'
+                OR StrTipoAmbiente <> 'PN'
+QUERY;
+        $builder = new DtoBuilder($query);
+        $dto = $builder->gerarDto();
+        // TODO Testar essa atribuição do comentário abaixo
+        /**
+            $dto->adicionarCriterio(
+              array('SigUf', 'TipoContexto', 'TipoInstancia', 'TipoAmbiente'),
+              array(InfraDTO::$OPER_DIFERENTE, InfraDTO::$OPER_DIFERENTE, InfraDTO::$OPER_DIFERENTE, InfraDTO::$OPER_DIFERENTE),
+              array($objPessoaUsuarioReplicado->sigUf, $objPessoaUsuarioReplicado->tipoContexto,$objPessoaUsuarioReplicado->tipoInstancia, $objPessoaUsuarioReplicado->tipoAmbiente),
+              array(InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR)
+            );
+         */
+    }
+    
+
 }
 

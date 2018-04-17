@@ -93,15 +93,37 @@ class DtoBuilder
                 eval('$objDto->set' . $strCampoCondicao . '(' . $strValorCondicao . ');');
             }
         }
+                
+        $objDto->adicionarCriterio(array(
+            'SigUf',
+            'TipoContexto',
+            'TipoInstancia',
+            'TipoAmbiente'
+        ), array(
+            '<>',
+            '<>',
+            '<>',
+            '<>'
+        ), array(
+            '',
+            '',
+            '',
+            ''
+        ), array(
+            'OR',
+            'OR',
+            'OR'
+        ));
+        
         return $objDto;
     }
 
-    public function setParam($strNomeParametro, $valorQualquer)
+    public function setParam($strNomeParametro, $varValorQualquer)
     {
         if (strpos($strNomeParametro, ":") === 0) {
-            $this->arrParametrosInformados[substr($strNomeParametro, 1)] = $valorQualquer;
+            $this->arrParametrosInformados[substr($strNomeParametro, 1)] = $varValorQualquer;
         } else {
-            $this->arrParametrosInformados[$strNomeParametro] = $valorQualquer;
+            $this->arrParametrosInformados[$strNomeParametro] = $varValorQualquer;
         }
     }
 }

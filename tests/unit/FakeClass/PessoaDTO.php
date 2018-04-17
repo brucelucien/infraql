@@ -1,10 +1,8 @@
 <?php
 namespace FakeClass;
 
-class PessoaDTO
+class PessoaDTO extends InfraDTOFake
 {
-
-    private $retTodosFoiChamado = false;
 
     private $retStrNomeFoiChamado = false;
 
@@ -21,16 +19,6 @@ class PessoaDTO
     private $strCpf = '';
 
     private $strCorPreferida = '';
-
-    public function retTodos()
-    {
-        $this->retTodosFoiChamado = true;
-    }
-
-    public function getRetTodosFoiChamado()
-    {
-        return $this->retTodosFoiChamado;
-    }
 
     public function retStrNome()
     {
