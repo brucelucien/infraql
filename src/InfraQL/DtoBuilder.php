@@ -32,7 +32,7 @@ class DtoBuilder
 
     const ER_EXCLUIR_ASPAS = "/^'|^\"|'$|\"$/";
 
-    private $infraQuery = "";
+    private $strInfraQuery = "";
 
     private $strNomeDto = "";
 
@@ -50,20 +50,20 @@ class DtoBuilder
 
     private function retirarDaQueryEspacosAdicionaisEQuebrasDeLinha()
     {
-        $querySemQuebrasDeLinha = preg_replace(self::ER_QUEBRAS_DE_LINHA, "", $this->infraQuery);
+        $querySemQuebrasDeLinha = preg_replace(self::ER_QUEBRAS_DE_LINHA, "", $this->strInfraQuery);
         $querySemEspacosAdicionais = preg_replace(self::ER_ESPACOS_DUPLICADOS, " ", $querySemQuebrasDeLinha);
-        $this->infraQuery = $querySemEspacosAdicionais;
+        $this->strInfraQuery = $querySemEspacosAdicionais;
     }
 
     private function extrairNomeDto()
     {
-        $this->strNomeDto = preg_replace(self::ER_CONTEUDO_ANTES_DO_DTO, " ", $this->infraQuery);
+        $this->strNomeDto = preg_replace(self::ER_CONTEUDO_ANTES_DO_DTO, " ", $this->strInfraQuery);
         $this->strNomeDto = preg_replace(self::ER_CONTEUDO_APOS_O_DTO, " ", $this->strNomeDto);
     }
 
     private function extrairCamposARetornar()
     {
-        $strCamposARetornar = preg_replace(self::ER_TUDO_QUE_NAO_FOR_CAMPO, " ", $this->infraQuery);
+        $strCamposARetornar = preg_replace(self::ER_TUDO_QUE_NAO_FOR_CAMPO, " ", $this->strInfraQuery);
         $strCamposARetornar = trim($strCamposARetornar);
         $this->arrCamposARetornar = explode(",", $strCamposARetornar);
         $this->arrCamposARetornar = array_map(function ($campo) {return trim($campo);}, $this->arrCamposARetornar);
@@ -74,7 +74,7 @@ class DtoBuilder
         $this->arrCamposCondicao = array();
         $this->arrValoresCondicao = array();
         $arrCondicoes = null;
-        preg_match_all(self::ER_CONDICAO, $this->infraQuery, $arrCondicoes);
+        preg_match_all(self::ER_CONDICAO, $this->strInfraQuery, $arrCondicoes);
         foreach ($arrCondicoes[0] as $condicao) {
             $strCampoCondicao = trim(preg_replace(self::ER_CONDICAO_CAMPO, "", $condicao));
             $strValorCondicao = trim(preg_replace(self::ER_CONDICAO_VALOR, "", $condicao));
@@ -85,20 +85,20 @@ class DtoBuilder
             }
             $this->arrValoresCondicao[] = preg_replace(self::ER_EXCLUIR_ASPAS, "", $strValorCondicao);
         }
-        preg_match_all("/" . self::ER_OPERADORES_LOGICOS_ESPERADOS . "/", $this->infraQuery, $this->arrOperadoresLogicos);
+        preg_match_all("/" . self::ER_OPERADORES_LOGICOS_ESPERADOS . "/", $this->strInfraQuery, $this->arrOperadoresLogicos);
         $this->arrOperadoresLogicos = $this->arrOperadoresLogicos[0];
-        preg_match_all("/" . self::ER_OPERADORES_COMPARACAO_ESPERADOS . "/", $this->infraQuery, $this->arrOperadoresComparacao);
+        preg_match_all("/" . self::ER_OPERADORES_COMPARACAO_ESPERADOS . "/", $this->strInfraQuery, $this->arrOperadoresComparacao);
         $this->arrOperadoresComparacao = $this->arrOperadoresComparacao[0];
     }
 
     private function clausulaWhereFoiInformada()
     {
-        return strpos($this->infraQuery, " WHERE ");
+        return strpos($this->strInfraQuery, " WHERE ");
     }
 
     private function distinctFoiInformado()
     {
-        return strpos($this->infraQuery, "SELECT DISTINCT");
+        return strpos($this->strInfraQuery, "SELECT DISTINCT");
     }
 
     private function adicionarAoDtoCondicoesNaClausulaWhere($dto)
@@ -115,7 +115,7 @@ class DtoBuilder
 
     public function __construct($strInfraQuery)
     {
-        $this->infraQuery = $strInfraQuery;
+        $this->strInfraQuery = $strInfraQuery;
         $this->retirarDaQueryEspacosAdicionaisEQuebrasDeLinha();
         $this->extrairNomeDto();
         $this->extrairCamposARetornar();
