@@ -97,6 +97,11 @@ class DtoBuilder
         return strpos($this->infraQuery, " WHERE ");
     }
 
+    private function distinctFoiInformado()
+    {
+        return strpos($this->infraQuery, "SELECT DISTINCT");
+    }
+
     private function adicionarAoDTOCondicoesNaClausulaWhere($dto)
     {
         if ($this->clausulaWhereFoiInformada()) {
@@ -126,7 +131,7 @@ class DtoBuilder
     {
         $objDto = null;
         eval('$objDto = new ' . $this->strNomeDto . '();');
-        if (strpos($this->infraQuery, "SELECT DISTINCT")) {
+        if ($this->distinctFoiInformado()) {
             $objDto->setDistinct(self::DEVE_USAR_DISTINCT);
         }
         foreach ($this->arrCamposARetornar as $strCampo) {
