@@ -101,7 +101,7 @@ class DtoBuilder
         return strpos($this->strInfraQuery, "SELECT DISTINCT");
     }
 
-    private function adicionarAoDtoCondicoesNaClausulaWhere($dto)
+    private function adicionarAoDtoCondicoesDaClausulaWhere($dto)
     {
         if ($this->clausulaWhereFoiInformada()) {
             $this->extrairCondicoesWhere();
@@ -144,7 +144,7 @@ class DtoBuilder
                 eval('$objDto->ret' . $strCampo . '();');
             }
         }
-        $this->adicionarAoDtoCondicoesNaClausulaWhere($objDto);
+        $this->adicionarAoDtoCondicoesDaClausulaWhere($objDto);
         return $objDto;
     }
 }
