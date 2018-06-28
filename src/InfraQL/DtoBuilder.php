@@ -8,6 +8,8 @@ class DtoBuilder
 
     const DOIS_PONTOS = ":";
 
+    const ASTERISCO = "*";
+
     const ER_OPERADORES_COMPARACAO_ESPERADOS = "=|<>";
 
     const ER_OPERADORES_LOGICOS_ESPERADOS = "OR|AND";
@@ -64,10 +66,7 @@ class DtoBuilder
         $strCamposARetornar = preg_replace(self::ER_TUDO_QUE_NAO_FOR_CAMPO, " ", $this->infraQuery);
         $strCamposARetornar = trim($strCamposARetornar);
         $this->arrCamposARetornar = explode(",", $strCamposARetornar);
-        $aplicarTrim = function ($campo) {
-            return trim($campo);
-        };
-        $this->arrCamposARetornar = array_map($aplicarTrim, $this->arrCamposARetornar);
+        $this->arrCamposARetornar = array_map(function ($campo) {return trim($campo);}, $this->arrCamposARetornar);
     }
 
     private function extrairCondicoesWhere()
@@ -135,7 +134,7 @@ class DtoBuilder
             $objDto->setDistinct(self::DEVE_USAR_DISTINCT);
         }
         foreach ($this->arrCamposARetornar as $strCampo) {
-            if ($strCampo == '*') {
+            if ($strCampo == self::ASTERISCO) {
                 $objDto->retTodos();
             } else {
                 eval('$objDto->ret' . $strCampo . '();');
