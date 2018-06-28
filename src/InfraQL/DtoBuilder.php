@@ -38,6 +38,11 @@ class DtoBuilder
 
     private $arrParametrosInformados = array();
 
+    private $strCamposCondicao = array();
+    private $strOperadoresComparacao = array();
+    private $strValoresCondicao = array();
+    private $strOperadoresLogicos = array();
+
     public function __construct($strInfraQuery)
     {
         $this->infraQuery = $strInfraQuery;
@@ -70,17 +75,49 @@ class DtoBuilder
         $this->arrCamposARetornar = array_map($aplicarTrim, $this->arrCamposARetornar);
     }
 
+    private function extrairCondicoesWhere()
+    {
+
+        $this->strCamposCondicao = array();
+        $this->strValoresCondicao = array();
+        $arrCondicoes = null;
+        preg_match_all(self::ER_CONDICAO, $this->infraQuery, $arrCondicoes);
+        foreach ($arrCondicoes[0] as $condicao) {
+            $strCampoCondicao = trim(preg_replace(self::ER_CONDICAO_CAMPO, "", $condicao));
+            $strValorCondicao = trim(preg_replace(self::ER_CONDICAO_VALOR, "", $condicao));
+            $strOperadorComparacao = trim(preg_replace("/{$strCampoCondicao}|{$strValorCondicao}/", "", $condicao));
+            $this->strCamposCondicao[] = substr($strCampoCondicao, 3);
+            if (strpos($strValorCondicao, self::DOIS_PONTOS) === 0) {
+                $strValorCondicao = $this->arrParametrosInformados[substr($strValorCondicao, 1)];
+            }
+            $this->strValoresCondicao[] = preg_replace(self::ER_EXCLUIR_ASPAS, "", $strValorCondicao);
+        }
+        preg_match_all("/" . self::ER_OPERADORES_LOGICOS_ESPERADOS . "/", $this->infraQuery, $this->strOperadoresLogicos);
+        $this->strOperadoresLogicos = $this->strOperadoresLogicos[0];
+        preg_match_all("/" . self::ER_OPERADORES_COMPARACAO_ESPERADOS . "/", $this->infraQuery, $this->strOperadoresComparacao);
+        $this->strOperadoresComparacao = $this->strOperadoresComparacao[0];
+    }
+
+    private function clausulaWhereFoiInformada()
+    {
+        return strpos($this->infraQuery, " WHERE ");
+    }
+
+    private function adicionarAoDTOCondicoesNaClausulaWhere($dto)
+    {
+        if ($this->clausulaWhereFoiInformada()) {
+            $this->extrairCondicoesWhere();
+            $dto->adicionarCriterio($this->strCamposCondicao, $this->strOperadoresComparacao, $this->strValoresCondicao, $this->strOperadoresLogicos);
+        }
+    }
+
     public function gerarDto()
     {
-        // TODO Excluir todos os comentários após concluir a versão básica do DtoBuilder de forma a tornar o código mais legível.
         $objDto = null;
-        // Criando DTO
         eval('$objDto = new ' . $this->strNomeDto . '();');
-        // Verificando necessidade de distinct
         if (strpos($this->infraQuery, "SELECT DISTINCT")) {
             $objDto->setDistinct(self::DEVE_USAR_DISTINCT);
         }
-        // Assegurando chamada a campos que devem ser retornados
         foreach ($this->arrCamposARetornar as $strCampo) {
             if ($strCampo == '*') {
                 $objDto->retTodos();
@@ -88,26 +125,7 @@ class DtoBuilder
                 eval('$objDto->ret' . $strCampo . '();');
             }
         }
-        // Identificando condições no WHERE
-        if (strpos($this->infraQuery, " WHERE ")) { // TODO A extração das condições deve ser efetuada no construtor. Aqui só serão deixadas as chamadas ao DTO.
-            $strCamposCondicao = array();
-            $strValoresCondicao = array();
-            $arrCondicoes = null;
-            preg_match_all(self::ER_CONDICAO, $this->infraQuery, $arrCondicoes);
-            foreach ($arrCondicoes[0] as $condicao) {
-                $strCampoCondicao = trim(preg_replace(self::ER_CONDICAO_CAMPO, "", $condicao));
-                $strValorCondicao = trim(preg_replace(self::ER_CONDICAO_VALOR, "", $condicao));
-                $strOperadorComparacao = trim(preg_replace("/{$strCampoCondicao}|{$strValorCondicao}/", "", $condicao));
-                $strCamposCondicao[] = substr($strCampoCondicao, 3);
-                if (strpos($strValorCondicao, self::DOIS_PONTOS) === 0) {
-                    $strValorCondicao = $this->arrParametrosInformados[substr($strValorCondicao, 1)];
-                }
-                $strValoresCondicao[] = preg_replace(self::ER_EXCLUIR_ASPAS, "", $strValorCondicao);
-            }
-            preg_match_all("/" . self::ER_OPERADORES_LOGICOS_ESPERADOS . "/", $this->infraQuery, $strOperadoresLogicos);
-            preg_match_all("/" . self::ER_OPERADORES_COMPARACAO_ESPERADOS . "/", $this->infraQuery, $strOperadoresComparacao);
-            $objDto->adicionarCriterio($strCamposCondicao, $strOperadoresComparacao[0], $strValoresCondicao, $strOperadoresLogicos[0]);
-        }
+        $this->adicionarAoDTOCondicoesNaClausulaWhere($objDto);
         return $objDto;
     }
 
