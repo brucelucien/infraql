@@ -101,14 +101,14 @@ class DtoBuilder
         return strpos($this->strInfraQuery, "SELECT DISTINCT");
     }
 
-    private function adicionarAoDtoCondicoesDaClausulaWhere($dto)
+    private function adicionarAoDtoCondicoesDaClausulaWhere($objDto)
     {
         if ($this->clausulaWhereFoiInformada()) {
             $this->extrairCondicoesWhere();
             if (sizeof($this->arrOperadoresLogicos) > 0) {
-                $dto->adicionarCriterio($this->arrCamposCondicao, $this->arrOperadoresComparacao, $this->arrValoresCondicao, $this->arrOperadoresLogicos);
+                $objDto->adicionarCriterio($this->arrCamposCondicao, $this->arrOperadoresComparacao, $this->arrValoresCondicao, $this->arrOperadoresLogicos);
             } else {
-                $dto->adicionarCriterio($this->arrCamposCondicao, $this->arrOperadoresComparacao, $this->arrValoresCondicao);
+                $objDto->adicionarCriterio($this->arrCamposCondicao, $this->arrOperadoresComparacao, $this->arrValoresCondicao);
             }
         }
     }
