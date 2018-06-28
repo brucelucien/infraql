@@ -6,9 +6,13 @@ class DtoBuilder
 
     const DEVE_USAR_DISTINCT = true;
 
-    const ER_OPERADORES_ESPERADOS = "=|<>";
+    const DOIS_PONTOS = ":";
 
-    const ER_CONDICAO = "/'?\b[^ ]{1,}\b'? {0,}(" . self::ER_OPERADORES_ESPERADOS . ") {0,}:?'?\b[^ ]{1,}\b'?/";
+    const ER_OPERADORES_COMPARACAO_ESPERADOS = "=|<>";
+
+    const ER_OPERADORES_LOGICOS_ESPERADOS = "OR|AND";
+
+    const ER_CONDICAO = "/'?\b[^ ]{1,}\b'? {0,}(" . self::ER_OPERADORES_COMPARACAO_ESPERADOS . ") {0,}:?'?\b[^ ]{1,}\b'?/";
 
     const ER_CONDICAO_CAMPO = "/( |=){1,}.{0,}/";
 
@@ -23,6 +27,8 @@ class DtoBuilder
     const ER_CONTEUDO_APOS_O_DTO = "/ {0,}WHERE.{1,}/";
 
     const ER_TUDO_QUE_NAO_FOR_CAMPO = "/SELECT (DISTINCT)?| FROM .{1,}/";
+
+    const ER_EXCLUIR_ASPAS = "/^'|^\"|'$|\"$/";
 
     private $infraQuery = "";
 
@@ -93,13 +99,13 @@ class DtoBuilder
                 $strValorCondicao = trim(preg_replace(self::ER_CONDICAO_VALOR, "", $condicao));
                 $strOperadorComparacao = trim(preg_replace("/{$strCampoCondicao}|{$strValorCondicao}/", "", $condicao));
                 $strCamposCondicao[] = substr($strCampoCondicao, 3);
-                if (strpos($strValorCondicao, ":") === 0) {
+                if (strpos($strValorCondicao, self::DOIS_PONTOS) === 0) {
                     $strValorCondicao = $this->arrParametrosInformados[substr($strValorCondicao, 1)];
                 }
-                $strValoresCondicao[] = preg_replace("/^'|^\"|'$|\"$/", "", $strValorCondicao);
+                $strValoresCondicao[] = preg_replace(self::ER_EXCLUIR_ASPAS, "", $strValorCondicao);
             }
-            preg_match_all("/OR|AND/", $this->infraQuery, $strOperadoresLogicos);
-            preg_match_all("/=|<>/", $this->infraQuery, $strOperadoresComparacao);
+            preg_match_all("/" . self::ER_OPERADORES_LOGICOS_ESPERADOS . "/", $this->infraQuery, $strOperadoresLogicos);
+            preg_match_all("/" . self::ER_OPERADORES_COMPARACAO_ESPERADOS . "/", $this->infraQuery, $strOperadoresComparacao);
             $objDto->adicionarCriterio($strCamposCondicao, $strOperadoresComparacao[0], $strValoresCondicao, $strOperadoresLogicos[0]);
         }
         return $objDto;
@@ -107,7 +113,7 @@ class DtoBuilder
 
     public function setParam($strNomeParametro, $varValorQualquer)
     {
-        if (strpos($strNomeParametro, ":") === 0) {
+        if (strpos($strNomeParametro, self::DOIS_PONTOS) === 0) {
             $this->arrParametrosInformados[substr($strNomeParametro, 1)] = $varValorQualquer;
         } else {
             $this->arrParametrosInformados[$strNomeParametro] = $varValorQualquer;
