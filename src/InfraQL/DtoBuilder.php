@@ -4,11 +4,11 @@ namespace InfraQL;
 class DtoBuilder
 {
 
-    const DEVE_USAR_DISTINCT = true;
+    const PARAMETRO_DEVE_USAR_DISTINCT = true;
 
-    const DOIS_PONTOS = ":";
+    const CARACTER_DOIS_PONTOS = ":";
 
-    const ASTERISCO = "*";
+    const CARACTER_ASTERISCO = "*";
 
     const ER_OPERADORES_COMPARACAO_ESPERADOS = "=|<>";
 
@@ -80,7 +80,7 @@ class DtoBuilder
             $strValorCondicao = trim(preg_replace(self::ER_CONDICAO_VALOR, "", $condicao));
             $strOperadorComparacao = trim(preg_replace("/{$strCampoCondicao}|{$strValorCondicao}/", "", $condicao));
             $this->arrCamposCondicao[] = substr($strCampoCondicao, 3);
-            if (strpos($strValorCondicao, self::DOIS_PONTOS) === 0) {
+            if (strpos($strValorCondicao, self::CARACTER_DOIS_PONTOS) === 0) {
                 $strValorCondicao = $this->arrParametrosInformados[substr($strValorCondicao, 1)];
             }
             $this->arrValoresCondicao[] = preg_replace(self::ER_EXCLUIR_ASPAS, "", $strValorCondicao);
@@ -105,7 +105,11 @@ class DtoBuilder
     {
         if ($this->clausulaWhereFoiInformada()) {
             $this->extrairCondicoesWhere();
-            $dto->adicionarCriterio($this->arrCamposCondicao, $this->arrOperadoresComparacao, $this->arrValoresCondicao, $this->arrOperadoresLogicos);
+            if (sizeof($this->arrOperadoresLogicos) > 0) {
+                $dto->adicionarCriterio($this->arrCamposCondicao, $this->arrOperadoresComparacao, $this->arrValoresCondicao, $this->arrOperadoresLogicos);
+            } else {
+                $dto->adicionarCriterio($this->arrCamposCondicao, $this->arrOperadoresComparacao, $this->arrValoresCondicao);
+            }
         }
     }
 
@@ -119,7 +123,7 @@ class DtoBuilder
 
     public function setParam($strNomeParametro, $varValorQualquer)
     {
-        if (strpos($strNomeParametro, self::DOIS_PONTOS) === 0) {
+        if (strpos($strNomeParametro, self::CARACTER_DOIS_PONTOS) === 0) {
             $this->arrParametrosInformados[substr($strNomeParametro, 1)] = $varValorQualquer;
         } else {
             $this->arrParametrosInformados[$strNomeParametro] = $varValorQualquer;
@@ -131,10 +135,10 @@ class DtoBuilder
         $objDto = null;
         eval('$objDto = new ' . $this->strNomeDto . '();');
         if ($this->distinctFoiInformado()) {
-            $objDto->setDistinct(self::DEVE_USAR_DISTINCT);
+            $objDto->setDistinct(self::PARAMETRO_DEVE_USAR_DISTINCT);
         }
         foreach ($this->arrCamposARetornar as $strCampo) {
-            if ($strCampo == self::ASTERISCO) {
+            if ($strCampo == self::CARACTER_ASTERISCO) {
                 $objDto->retTodos();
             } else {
                 eval('$objDto->ret' . $strCampo . '();');

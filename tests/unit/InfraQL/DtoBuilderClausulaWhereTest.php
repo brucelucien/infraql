@@ -19,7 +19,7 @@ QUERY;
         $this->assertEquals('SinAtivo', $dto->getVarAtributos()[0]);
         $this->assertEquals('=', $dto->getVarOperadoresAtributos()[0]);
         $this->assertEquals('S', $dto->getVarValoresAtributos()[0]);
-        $this->assertEquals(array(), $dto->getVarOperadoresLogicos());
+        $this->assertNull($dto->getVarOperadoresLogicos());
     }
 
     public function testDeveIdentificarAtribuicaoSimplesTipoNumeroNoWhere()
@@ -37,7 +37,7 @@ QUERY;
         $this->assertEquals('Idade', $dto->getVarAtributos()[0]);
         $this->assertEquals('=', $dto->getVarOperadoresAtributos()[0]);
         $this->assertEquals(42, $dto->getVarValoresAtributos()[0]);
-        $this->assertEquals(array(), $dto->getVarOperadoresLogicos());
+        $this->assertNull($dto->getVarOperadoresLogicos());
     }
 
     public function testDeveSerPossivelUsarUmParametroNaQuery()
@@ -57,7 +57,7 @@ QUERY;
         $this->assertEquals('Idade', $dto->getVarAtributos()[0]);
         $this->assertEquals('=', $dto->getVarOperadoresAtributos()[0]);
         $this->assertEquals(42, $dto->getVarValoresAtributos()[0]);
-        $this->assertEquals(array(), $dto->getVarOperadoresLogicos());
+        $this->assertNull($dto->getVarOperadoresLogicos());
     }
 
     public function testDeveSerPossivelUsarUmParametroComDoisPontosNaQuery()
@@ -77,7 +77,7 @@ QUERY;
         $this->assertEquals('Idade', $dto->getVarAtributos()[0]);
         $this->assertEquals('=', $dto->getVarOperadoresAtributos()[0]);
         $this->assertEquals(23, $dto->getVarValoresAtributos()[0]);
-        $this->assertEquals(array(), $dto->getVarOperadoresLogicos());
+        $this->assertNull($dto->getVarOperadoresLogicos());
     }
 
     public function testDeveIdentificarUmAndEDoisParametros()
