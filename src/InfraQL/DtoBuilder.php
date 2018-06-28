@@ -38,18 +38,13 @@ class DtoBuilder
 
     private $arrParametrosInformados = array();
 
-    private $strCamposCondicao = array();
-    private $strOperadoresComparacao = array();
-    private $strValoresCondicao = array();
-    private $strOperadoresLogicos = array();
+    private $arrCamposCondicao = array();
 
-    public function __construct($strInfraQuery)
-    {
-        $this->infraQuery = $strInfraQuery;
-        $this->retirarDaQueryEspacosAdicionaisEQuebrasDeLinha();
-        $this->extrairNomeDto();
-        $this->extrairCamposARetornar();
-    }
+    private $arrOperadoresComparacao = array();
+
+    private $arrValoresCondicao = array();
+
+    private $arrOperadoresLogicos = array();
 
     private function retirarDaQueryEspacosAdicionaisEQuebrasDeLinha()
     {
@@ -77,25 +72,24 @@ class DtoBuilder
 
     private function extrairCondicoesWhere()
     {
-
-        $this->strCamposCondicao = array();
-        $this->strValoresCondicao = array();
+        $this->arrCamposCondicao = array();
+        $this->arrValoresCondicao = array();
         $arrCondicoes = null;
         preg_match_all(self::ER_CONDICAO, $this->infraQuery, $arrCondicoes);
         foreach ($arrCondicoes[0] as $condicao) {
             $strCampoCondicao = trim(preg_replace(self::ER_CONDICAO_CAMPO, "", $condicao));
             $strValorCondicao = trim(preg_replace(self::ER_CONDICAO_VALOR, "", $condicao));
             $strOperadorComparacao = trim(preg_replace("/{$strCampoCondicao}|{$strValorCondicao}/", "", $condicao));
-            $this->strCamposCondicao[] = substr($strCampoCondicao, 3);
+            $this->arrCamposCondicao[] = substr($strCampoCondicao, 3);
             if (strpos($strValorCondicao, self::DOIS_PONTOS) === 0) {
                 $strValorCondicao = $this->arrParametrosInformados[substr($strValorCondicao, 1)];
             }
-            $this->strValoresCondicao[] = preg_replace(self::ER_EXCLUIR_ASPAS, "", $strValorCondicao);
+            $this->arrValoresCondicao[] = preg_replace(self::ER_EXCLUIR_ASPAS, "", $strValorCondicao);
         }
-        preg_match_all("/" . self::ER_OPERADORES_LOGICOS_ESPERADOS . "/", $this->infraQuery, $this->strOperadoresLogicos);
-        $this->strOperadoresLogicos = $this->strOperadoresLogicos[0];
-        preg_match_all("/" . self::ER_OPERADORES_COMPARACAO_ESPERADOS . "/", $this->infraQuery, $this->strOperadoresComparacao);
-        $this->strOperadoresComparacao = $this->strOperadoresComparacao[0];
+        preg_match_all("/" . self::ER_OPERADORES_LOGICOS_ESPERADOS . "/", $this->infraQuery, $this->arrOperadoresLogicos);
+        $this->arrOperadoresLogicos = $this->arrOperadoresLogicos[0];
+        preg_match_all("/" . self::ER_OPERADORES_COMPARACAO_ESPERADOS . "/", $this->infraQuery, $this->arrOperadoresComparacao);
+        $this->arrOperadoresComparacao = $this->arrOperadoresComparacao[0];
     }
 
     private function clausulaWhereFoiInformada()
@@ -107,7 +101,24 @@ class DtoBuilder
     {
         if ($this->clausulaWhereFoiInformada()) {
             $this->extrairCondicoesWhere();
-            $dto->adicionarCriterio($this->strCamposCondicao, $this->strOperadoresComparacao, $this->strValoresCondicao, $this->strOperadoresLogicos);
+            $dto->adicionarCriterio($this->arrCamposCondicao, $this->arrOperadoresComparacao, $this->arrValoresCondicao, $this->arrOperadoresLogicos);
+        }
+    }
+
+    public function __construct($strInfraQuery)
+    {
+        $this->infraQuery = $strInfraQuery;
+        $this->retirarDaQueryEspacosAdicionaisEQuebrasDeLinha();
+        $this->extrairNomeDto();
+        $this->extrairCamposARetornar();
+    }
+
+    public function setParam($strNomeParametro, $varValorQualquer)
+    {
+        if (strpos($strNomeParametro, self::DOIS_PONTOS) === 0) {
+            $this->arrParametrosInformados[substr($strNomeParametro, 1)] = $varValorQualquer;
+        } else {
+            $this->arrParametrosInformados[$strNomeParametro] = $varValorQualquer;
         }
     }
 
@@ -127,14 +138,5 @@ class DtoBuilder
         }
         $this->adicionarAoDTOCondicoesNaClausulaWhere($objDto);
         return $objDto;
-    }
-
-    public function setParam($strNomeParametro, $varValorQualquer)
-    {
-        if (strpos($strNomeParametro, self::DOIS_PONTOS) === 0) {
-            $this->arrParametrosInformados[substr($strNomeParametro, 1)] = $varValorQualquer;
-        } else {
-            $this->arrParametrosInformados[$strNomeParametro] = $varValorQualquer;
-        }
     }
 }
