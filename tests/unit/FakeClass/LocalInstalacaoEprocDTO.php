@@ -12,6 +12,8 @@ class LocalInstalacaoEprocDTO extends InfraDTOFake
 
     private $strTipoAmbiente;
 
+    private $numIdProgramador;
+
     public function getStrSigUf()
     {
         return $this->strSigUf;
@@ -51,5 +53,16 @@ class LocalInstalacaoEprocDTO extends InfraDTOFake
     {
         $this->strTipoAmbiente = $strTipoAmbiente;
     }
-}
 
+    public function getNumIdProgramador()
+    {
+        return $this->numIdProgramador;
+    }
+
+    public function setNumIdProgramador($numIdProgramador)
+    {
+        $this->numIdProgramador = $numIdProgramador;
+
+        return $this;
+    }
+}

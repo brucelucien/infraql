@@ -6,7 +6,9 @@ class DtoBuilder
 
     const DEVE_USAR_DISTINCT = true;
 
-    const ER_CONDICAO = "/'?\b[^ ]{1,}\b'? {0,}= {0,}:?'?\b[^ ]{1,}\b'?/";
+    const ER_OPERADORES_ESPERADOS = "=|<>";
+
+    const ER_CONDICAO = "/'?\b[^ ]{1,}\b'? {0,}(" . self::ER_OPERADORES_ESPERADOS . ") {0,}:?'?\b[^ ]{1,}\b'?/";
 
     const ER_CONDICAO_CAMPO = "/( |=){1,}.{0,}/";
 
@@ -82,39 +84,24 @@ class DtoBuilder
         }
         // Identificando condições no WHERE
         if (strpos($this->infraQuery, " WHERE ")) { // TODO A extração das condições deve ser efetuada no construtor. Aqui só serão deixadas as chamadas ao DTO.
+            $strCamposCondicao = array();
+            $strValoresCondicao = array();
             $arrCondicoes = null;
             preg_match_all(self::ER_CONDICAO, $this->infraQuery, $arrCondicoes);
             foreach ($arrCondicoes[0] as $condicao) {
                 $strCampoCondicao = trim(preg_replace(self::ER_CONDICAO_CAMPO, "", $condicao));
                 $strValorCondicao = trim(preg_replace(self::ER_CONDICAO_VALOR, "", $condicao));
+                $strOperadorComparacao = trim(preg_replace("/{$strCampoCondicao}|{$strValorCondicao}/", "", $condicao));
+                $strCamposCondicao[] = substr($strCampoCondicao, 3);
                 if (strpos($strValorCondicao, ":") === 0) {
                     $strValorCondicao = $this->arrParametrosInformados[substr($strValorCondicao, 1)];
                 }
-                eval('$objDto->set' . $strCampoCondicao . '(' . $strValorCondicao . ');');
+                $strValoresCondicao[] = preg_replace("/^'|^\"|'$|\"$/", "", $strValorCondicao);
             }
+            preg_match_all("/OR|AND/", $this->infraQuery, $strOperadoresLogicos);
+            preg_match_all("/=|<>/", $this->infraQuery, $strOperadoresComparacao);
+            $objDto->adicionarCriterio($strCamposCondicao, $strOperadoresComparacao[0], $strValoresCondicao, $strOperadoresLogicos[0]);
         }
-                
-        $objDto->adicionarCriterio(array(
-            'SigUf',
-            'TipoContexto',
-            'TipoInstancia',
-            'TipoAmbiente'
-        ), array(
-            '<>',
-            '<>',
-            '<>',
-            '<>'
-        ), array(
-            '',
-            '',
-            '',
-            ''
-        ), array(
-            'OR',
-            'OR',
-            'OR'
-        ));
-        
         return $objDto;
     }
 
@@ -127,4 +114,3 @@ class DtoBuilder
         }
     }
 }
-

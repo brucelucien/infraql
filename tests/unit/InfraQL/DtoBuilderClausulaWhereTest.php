@@ -16,7 +16,10 @@ class DtoBuilderClausulaWhereTest extends \Codeception\Test\Unit
 QUERY;
         $builder = new DtoBuilder($query);
         $dto = $builder->gerarDto();
-        $this->assertEquals('S', $dto->getStrSinAtivo());
+        $this->assertEquals('SinAtivo', $dto->getVarAtributos()[0]);
+        $this->assertEquals('=', $dto->getVarOperadoresAtributos()[0]);
+        $this->assertEquals('S', $dto->getVarValoresAtributos()[0]);
+        $this->assertEquals(array(), $dto->getVarOperadoresLogicos());
     }
 
     public function testDeveIdentificarAtribuicaoSimplesTipoNumeroNoWhere()
@@ -31,7 +34,10 @@ QUERY;
 QUERY;
         $builder = new DtoBuilder($query);
         $dto = $builder->gerarDto();
-        $this->assertEquals(42, $dto->getNumIdade());
+        $this->assertEquals('Idade', $dto->getVarAtributos()[0]);
+        $this->assertEquals('=', $dto->getVarOperadoresAtributos()[0]);
+        $this->assertEquals(42, $dto->getVarValoresAtributos()[0]);
+        $this->assertEquals(array(), $dto->getVarOperadoresLogicos());
     }
 
     public function testDeveSerPossivelUsarUmParametroNaQuery()
@@ -48,7 +54,10 @@ QUERY;
         $builder = new DtoBuilder($query);
         $builder->setParam('NUM_IDADE', $numIdade);
         $dto = $builder->gerarDto();
-        $this->assertEquals($numIdade, $dto->getNumIdade());
+        $this->assertEquals('Idade', $dto->getVarAtributos()[0]);
+        $this->assertEquals('=', $dto->getVarOperadoresAtributos()[0]);
+        $this->assertEquals(42, $dto->getVarValoresAtributos()[0]);
+        $this->assertEquals(array(), $dto->getVarOperadoresLogicos());
     }
 
     public function testDeveSerPossivelUsarUmParametroComDoisPontosNaQuery()
@@ -65,7 +74,10 @@ QUERY;
         $builder = new DtoBuilder($query);
         $builder->setParam(':NUM_IDADE', $numIdade);
         $dto = $builder->gerarDto();
-        $this->assertEquals($numIdade, $dto->getNumIdade());
+        $this->assertEquals('Idade', $dto->getVarAtributos()[0]);
+        $this->assertEquals('=', $dto->getVarOperadoresAtributos()[0]);
+        $this->assertEquals(23, $dto->getVarValoresAtributos()[0]);
+        $this->assertEquals(array(), $dto->getVarOperadoresLogicos());
     }
 
     public function testDeveIdentificarUmAndEDoisParametros()
@@ -82,13 +94,20 @@ QUERY;
 QUERY;
         $builder = new DtoBuilder($query);
         $dto = $builder->gerarDto();
-        $this->assertEquals(42, $dto->getNumIdade());
-        $this->assertEquals('99988877766', $dto->getStrCpf());
-        $this->assertEquals('Azul', $dto->getStrCorPreferida());
+        $this->assertEquals('Idade', $dto->getVarAtributos()[0]);
+        $this->assertEquals('=', $dto->getVarOperadoresAtributos()[0]);
+        $this->assertEquals(42, $dto->getVarValoresAtributos()[0]);
+        $this->assertEquals('AND', $dto->getVarOperadoresLogicos()[0]);
+        $this->assertEquals('Cpf', $dto->getVarAtributos()[1]);
+        $this->assertEquals('=', $dto->getVarOperadoresAtributos()[1]);
+        $this->assertEquals('99988877766', $dto->getVarValoresAtributos()[1]);
+        $this->assertEquals('AND', $dto->getVarOperadoresLogicos()[1]);
+        $this->assertEquals('CorPreferida', $dto->getVarAtributos()[2]);
+        $this->assertEquals('=', $dto->getVarOperadoresAtributos()[2]);
+        $this->assertEquals('Azul', $dto->getVarValoresAtributos()[2]);
     }
-    
-    
-    public function testDeveMapearOperadorLogicoOr()
+
+    public function testDeveMapearUsandoAdicionarCriterioAtributos()
     {
         $query = <<<QUERY
             SELECT
@@ -97,23 +116,100 @@ QUERY;
                 FakeClass\LocalInstalacaoEprocDTO
             WHERE
                 StrSigUf <> 'RS'
-                OR StrTipoContexto <> 'D'
-                OR StrTipoInstancia <> 'EST1'
-                OR StrTipoAmbiente <> 'PN'
+                OR StrTipoContexto = 'D'
+                AND StrTipoInstancia <> 'EST1'
+                OR StrTipoAmbiente = 'PN'
 QUERY;
         $builder = new DtoBuilder($query);
         $dto = $builder->gerarDto();
-        // TODO Testar essa atribuição do comentário abaixo
-        /**
-            $dto->adicionarCriterio(
-              array('SigUf', 'TipoContexto', 'TipoInstancia', 'TipoAmbiente'),
-              array(InfraDTO::$OPER_DIFERENTE, InfraDTO::$OPER_DIFERENTE, InfraDTO::$OPER_DIFERENTE, InfraDTO::$OPER_DIFERENTE),
-              array($objPessoaUsuarioReplicado->sigUf, $objPessoaUsuarioReplicado->tipoContexto,$objPessoaUsuarioReplicado->tipoInstancia, $objPessoaUsuarioReplicado->tipoAmbiente),
-              array(InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR, InfraDTO::$OPER_LOGICO_OR)
-            );
-         */
+        $this->assertEquals('SigUf', $dto->getVarAtributos()[0]);
+        $this->assertEquals('TipoContexto', $dto->getVarAtributos()[1]);
+        $this->assertEquals('TipoInstancia', $dto->getVarAtributos()[2]);
+        $this->assertEquals('TipoAmbiente', $dto->getVarAtributos()[3]);
     }
-    
+
+    public function testDeveMapearUsandoAdicionarCriterioOperadoresComparacao()
+    {
+        $query = <<<QUERY
+            SELECT
+                *
+            FROM
+                FakeClass\LocalInstalacaoEprocDTO
+            WHERE
+                StrSigUf <> 'RS'
+                OR StrTipoContexto = 'D'
+                AND StrTipoInstancia <> 'EST1'
+                OR StrTipoAmbiente = 'PN'
+QUERY;
+        $builder = new DtoBuilder($query);
+        $dto = $builder->gerarDto();
+        // Operadores de comparação
+        $this->assertEquals('<>', $dto->getVarOperadoresAtributos()[0]);
+        $this->assertEquals('=', $dto->getVarOperadoresAtributos()[1]);
+        $this->assertEquals('<>', $dto->getVarOperadoresAtributos()[2]);
+        $this->assertEquals('=', $dto->getVarOperadoresAtributos()[3]);
+    }
+
+    public function testDeveMapearUsandoAdicionarCriterioValores()
+    {
+        $query = <<<QUERY
+            SELECT
+                *
+            FROM
+                FakeClass\LocalInstalacaoEprocDTO
+            WHERE
+                StrSigUf <> 'RS'
+                OR StrTipoContexto = 'D'
+                AND StrTipoInstancia <> 'EST1'
+                OR StrTipoAmbiente = 'PN'
+QUERY;
+        $builder = new DtoBuilder($query);
+        $dto = $builder->gerarDto();
+        $this->assertEquals('RS', $dto->getVarValoresAtributos()[0]);
+        $this->assertEquals('D', $dto->getVarValoresAtributos()[1]);
+        $this->assertEquals('EST1', $dto->getVarValoresAtributos()[2]);
+        $this->assertEquals('PN', $dto->getVarValoresAtributos()[3]);
+    }
+
+    public function testDeveMapearUsandoAdicionarCriterioOperadoresLogicos()
+    {
+        $query = <<<QUERY
+            SELECT
+                *
+            FROM
+                FakeClass\LocalInstalacaoEprocDTO
+            WHERE
+                StrSigUf <> 'RS'
+                OR StrTipoContexto = 'D'
+                AND StrTipoInstancia <> 'EST1'
+                OR StrTipoAmbiente = 'PN'
+QUERY;
+        $builder = new DtoBuilder($query);
+        $dto = $builder->gerarDto();
+        $this->assertEquals('OR', $dto->getVarOperadoresLogicos()[0]);
+        $this->assertEquals('AND', $dto->getVarOperadoresLogicos()[1]);
+        $this->assertEquals('OR', $dto->getVarOperadoresLogicos()[2]);
+    }
+
+    public function testDeveMapearUsandoAdicionarCriterioComCondicaoNumerica()
+    {
+        $query = <<<QUERY
+            SELECT
+                *
+            FROM
+                FakeClass\LocalInstalacaoEprocDTO
+            WHERE
+                StrSigUf <> 'RS'
+                OR StrTipoContexto = 'D'
+                AND NumIdProgramador <> 42
+                OR StrTipoAmbiente = 'PN'
+QUERY;
+        $builder = new DtoBuilder($query);
+        $dto = $builder->gerarDto();
+        $this->assertEquals('IdProgramador', $dto->getVarAtributos()[2]);
+        $this->assertEquals('<>', $dto->getVarOperadoresAtributos()[2]);
+        $this->assertEquals(42, $dto->getVarValoresAtributos()[2]);
+        $this->assertEquals('AND', $dto->getVarOperadoresLogicos()[1]);
+    }
 
 }
-
