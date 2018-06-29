@@ -78,7 +78,6 @@ class DtoBuilder
         foreach ($arrCondicoes[0] as $condicao) {
             $strCampoCondicao = trim(preg_replace(self::ER_CONDICAO_CAMPO, "", $condicao));
             $strValorCondicao = trim(preg_replace(self::ER_CONDICAO_VALOR, "", $condicao));
-            $strOperadorComparacao = trim(preg_replace("/{$strCampoCondicao}|{$strValorCondicao}/", "", $condicao));
             $this->arrCamposCondicao[] = substr($strCampoCondicao, 3);
             if (strpos($strValorCondicao, self::CARACTER_DOIS_PONTOS) === 0) {
                 $strValorCondicao = $this->arrParametrosInformados[substr($strValorCondicao, 1)];
