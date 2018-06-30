@@ -131,4 +131,26 @@ QUERY;
         $this->assertTrue($dto->getRetStrSexoFoiChamado());
         $this->assertTrue($dto->getSetDistinctFoiChamado());
     }
+
+    public function testDeveRetornarSomenteODtoQuandoContiverSomenteOFrom()
+    {
+        $query = <<<QUERY
+            FROM
+                FakeClass\PessoaDTO
+QUERY;
+        $builder = new DtoBuilder($query);
+        $dto = $builder->gerarDto();
+        $this->assertEquals("FakeClass\PessoaDTO", get_class($dto));
+    }
+
+    public function testSeNaoHaSelectEntaoDeveChamarRetTodos()
+    {
+        $query = <<<QUERY
+            FROM
+                FakeClass\PessoaDTO
+QUERY;
+        $builder = new DtoBuilder($query);
+        $dto = $builder->gerarDto();
+        $this->assertTrue($dto->getRetTodosFoiChamado());
+    }
 }

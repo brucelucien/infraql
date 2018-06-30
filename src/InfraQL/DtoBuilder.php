@@ -65,8 +65,12 @@ class DtoBuilder
     {
         $strCamposARetornar = preg_replace(self::ER_TUDO_QUE_NAO_FOR_CAMPO, " ", $this->strInfraQuery);
         $strCamposARetornar = trim($strCamposARetornar);
-        $this->arrCamposARetornar = explode(",", $strCamposARetornar);
-        $this->arrCamposARetornar = array_map(function ($campo) {return trim($campo);}, $this->arrCamposARetornar);
+        if (strlen($strCamposARetornar) > 0) {
+            $this->arrCamposARetornar = explode(",", $strCamposARetornar);
+            $this->arrCamposARetornar = array_map(function ($campo) {return trim($campo);}, $this->arrCamposARetornar);
+        } else {
+            $this->arrCamposARetornar = array(self::CARACTER_ASTERISCO);
+        }
     }
 
     private function extrairCondicoesWhere()
