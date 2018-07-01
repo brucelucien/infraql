@@ -212,4 +212,52 @@ QUERY;
         $this->assertEquals('AND', $dto->getVarOperadoresLogicos()[1]);
     }
 
+    public function testSeOCriterioTemParentesesEntaoDeveNomeaLo()
+    {
+        $query = <<<QUERY
+            FROM
+                FakeClass\PessoaDTO
+            WHERE
+                (StrSinAtivo = 'S')
+QUERY;
+        $builder = new DtoBuilder($query);
+        $dto = $builder->gerarDto();
+        $this->assertEquals('CRITERIO_0', $dto->getArrNomesCriterios()[0]);
+    }
+
+    public function testSeOCriterioTemParentesesComAndEntaoDeveNomeaLo()
+    {
+        $query = <<<QUERY
+            FROM
+                FakeClass\PessoaDTO
+            WHERE
+                (StrSinAtivo = 'S')
+                AND (StrCpf = '12345678901')
+QUERY;
+        $builder = new DtoBuilder($query);
+        $dto = $builder->gerarDto();
+        $this->assertEquals('CRITERIO_0', $dto->getArrNomesCriterios()[0]);
+        $this->assertEquals('CRITERIO_1', $dto->getArrNomesCriterios()[1]);
+    }
+
+//     public function testDeveMapearComParentesesUsandoAdicionarCriterioValores()
+//     {
+//         $query = <<<QUERY
+//             SELECT
+//                 *
+//             FROM
+//                 FakeClass\LocalInstalacaoEprocDTO
+//             WHERE
+//                 (StrSigUf <> 'RS')
+//                 OR (StrTipoContexto = 'D')
+//                 AND (StrTipoInstancia <> 'EST1')
+//                 OR (StrTipoAmbiente = 'PN')
+// QUERY;
+//         $builder = new DtoBuilder($query);
+//         $dto = $builder->gerarDto();
+//         $this->assertEquals('RS', $dto->getVarValoresAtributos()[0]);
+//         $this->assertEquals('D', $dto->getVarValoresAtributos()[1]);
+//         $this->assertEquals('EST1', $dto->getVarValoresAtributos()[2]);
+//     }
+
 }

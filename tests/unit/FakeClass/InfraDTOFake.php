@@ -14,7 +14,13 @@ abstract class InfraDTOFake
 
     private $varOperadoresLogicos = null;
 
-    private $strNome = null;
+    private $arrNomesCriterios = array();
+
+    private $arrCriteriosGrupos = array();
+
+    private $varOperadoresLogicosGrupos = array();
+
+    private $arrNomeGrupos = "";
 
     public function retTodos()
     {
@@ -46,17 +52,43 @@ abstract class InfraDTOFake
         return $this->varOperadoresLogicos;
     }
 
-    public function getStrNome()
+    public function getArrNomesCriterios()
     {
-        return $this->strNome;
+        return $this->arrNomesCriterios;
     }
 
-    public function adicionarCriterio($varAtributos, $varOperadoresAtributos, $varValoresAtributos, $varOperadoresLogicos = null, array $strNome = null)
+    public function adicionarCriterio($varAtributos, $varOperadoresAtributos, $varValoresAtributos, $varOperadoresLogicos = null, $strNomeCriterio = null)
     {
         $this->varAtributos = $varAtributos;
         $this->varOperadoresAtributos = $varOperadoresAtributos;
         $this->varValoresAtributos = $varValoresAtributos;
         $this->varOperadoresLogicos = $varOperadoresLogicos;
-        $this->strNome = $strNome;
+        if (!is_null($strNomeCriterio)) {
+            $this->arrNomesCriterios[] = $strNomeCriterio;
+        }
+    }
+
+    public function agruparCriterios($arrCriterios, $varOperadoresLogicos, $strNome = null)
+    {
+        $this->getArrCriteriosGrupos[] = $arrCriterios;
+        $this->getVarOperadoresLogicosGrupos[] = $varOperadoresLogicos;
+        if (!is_null($strNome)) {
+            $this->arrNomeGrupos[] = $strNome;
+        }
+    }
+
+    public function getArrCriteriosGrupos()
+    {
+        return $this->arrCriteriosGrupos;
+    }
+
+    public function getArrNomeGrupos()
+    {
+        return $this->arrNomeGrupos;
+    }
+
+    public function getVarOperadoresLogicosGrupos()
+    {
+        return $this->varOperadoresLogicosGrupos;
     }
 }
