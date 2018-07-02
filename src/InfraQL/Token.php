@@ -3,6 +3,7 @@ namespace InfraQL;
 
 class Token
 {
+
     private $numType;
 
     private $strText;

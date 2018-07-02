@@ -3,36 +3,15 @@ namespace InfraQL;
 
 class InfraQlLexer extends Lexer
 {
-    public const BOF = 2;
-
-    public const SELECT = 3;
-
-    public const FIELD_NAME = 4;
-
-    public const COMMA = 5;
-
-    public const FROM = 6;
-
-    public const DTO_NAME = 7;
-
-    public const WHERE = 8;
-
-    public const GREATER_THAN_OR_EQUAL_TO = 9;
-
-    public const NUMBER_INTEGER = 10;
-
-    public const LOGICAL_OPERATOR_AND = 11;
-
-    public const PARENTHESES_LEFT = 12;
 
     private $objPreviousToken = null;
 
-    private $numContextClause = -1;
+    private $numContextClause = - 1;
 
     public function __construct(string $strInput)
     {
         parent::__construct($strInput);
-        $this->objPreviousToken = new Token(self::BOF, "");
+        $this->objPreviousToken = new Token(InfraQlTokenType::BOF, "");
     }
 
     public function getObjNextToken(): Token
@@ -43,22 +22,42 @@ class InfraQlLexer extends Lexer
         } else {
             while (($this->getStrCharacter() != self::EOF) && ($objToken == null)) {
                 switch ($this->getStrCharacter()) {
-                    case ' ':
+                    case " ":
+                    case "\r":
+                    case "\n":
+                    case "\t":
                         $this->consume();
                         continue;
-                        break;
-                    case ',':
-                        $objToken = new Token(self::COMMA, $this->getStrCharacter());
+                    case ",":
+                        $objToken = new Token(InfraQlTokenType::COMMA, $this->getStrCharacter());
                         $this->consume();
                         break;
-                    case '(':
-                        $objToken = new Token(self::PARENTHESES_LEFT, $this->getStrCharacter());
+                    case "(":
+                        $objToken = new Token(InfraQlTokenType::PARENTHESES_LEFT, $this->getStrCharacter());
                         $this->consume();
                         break;
-                    case '>':
+                    case ")":
+                        $objToken = new Token(InfraQlTokenType::PARENTHESES_RIGHT, $this->getStrCharacter());
+                        $this->consume();
+                        break;
+                    case "=":
+                        $objToken = new Token(InfraQlTokenType::EQUAL, $this->getStrCharacter());
+                        $this->consume();
+                        break;
+                    case "'":
+                        $strUserString = "";
+                        do {
+                            $strUserString .= $this->getStrCharacter();
+                            $this->consume();
+                        } while ($this->getStrCharacter() != "'");
+                        $strUserString .= $this->getStrCharacter();
+                        $objToken = new Token(InfraQlTokenType::USER_STRING, $strUserString);
+                        $this->consume();
+                        break;
+                    case ">":
                         $this->consume();
                         if ($this->getStrCharacter() == "=") {
-                            $objToken = new Token(self::GREATER_THAN_OR_EQUAL_TO, ">=");
+                            $objToken = new Token(InfraQlTokenType::GREATER_THAN_OR_EQUAL_TO, ">=");
                         }
                         $this->consume();
                         break;
@@ -69,7 +68,7 @@ class InfraQlLexer extends Lexer
                                 $strNumber .= $this->getStrCharacter();
                                 $this->consume();
                             } while ($this->isNumber());
-                            $objToken = new Token(self::NUMBER_INTEGER, $strNumber);
+                            $objToken = new Token(InfraQlTokenType::NUMBER_INTEGER, $strNumber);
                         }
                         if ($this->isLetter()) {
                             $strText = "";
@@ -78,27 +77,37 @@ class InfraQlLexer extends Lexer
                                 $this->consume();
                             } while ($this->isLetter());
                             switch ($strText) {
-                                case 'SELECT':
-                                    $objToken = new Token(self::SELECT, $strText);
+                                case "SELECT":
+                                    $this->numContextClause = InfraQlTokenType::SELECT;
+                                    $objToken = new Token(InfraQlTokenType::SELECT, $strText);
                                     break;
-                                case 'FROM':
-                                    $objToken = new Token(self::FROM, $strText);
+                                case "FROM":
+                                    $this->numContextClause = InfraQlTokenType::FROM;
+                                    $objToken = new Token(InfraQlTokenType::FROM, $strText);
                                     break;
-                                case 'WHERE':
-                                    $objToken = new Token(self::WHERE, $strText);
+                                case "WHERE":
+                                    $this->numContextClause = InfraQlTokenType::WHERE;
+                                    $objToken = new Token(InfraQlTokenType::WHERE, $strText);
                                     break;
-                                case 'AND':
-                                    $objToken = new Token(self::LOGICAL_OPERATOR_AND, $strText);
+                                case "AND":
+                                    $objToken = new Token(InfraQlTokenType::LOGICAL_OPERATOR_AND, $strText);
+                                    break;
+                                case "ORDER":
+                                    $strText .= $this->getStrCharacter();
+                                    $this->consume();
+                                    $strText .= $this->getStrCharacter();
+                                    $this->consume();
+                                    $strText .= $this->getStrCharacter();
+                                    $this->consume();
+                                    $this->numContextClause = InfraQlTokenType::ORDER_BY;
+                                    $objToken = new Token(InfraQlTokenType::ORDER_BY, $strText);
                                     break;
                                 default:
-                                    if ($this->numContextClause == self::FROM) {
-                                        $objToken = new Token(self::DTO_NAME, $strText);
+                                    if ($this->numContextClause == InfraQlTokenType::FROM) {
+                                        $objToken = new Token(InfraQlTokenType::DTO_NAME, $strText);
                                     } else {
-                                        switch ($this->numContextClause) {
-                                            case self::SELECT:
-                                            case self::WHERE:
-                                                $objToken = new Token(self::FIELD_NAME, $strText);
-                                                break;
+                                        if (($this->numContextClause == InfraQlTokenType::SELECT) || ($this->numContextClause == InfraQlTokenType::WHERE) || ($this->numContextClause == InfraQlTokenType::ORDER_BY)) {
+                                            $objToken = new Token(InfraQlTokenType::FIELD_NAME, $strText);
                                         }
                                     }
                                     if (is_null($objToken)) {
@@ -107,20 +116,12 @@ class InfraQlLexer extends Lexer
                                     break;
                             }
                         }
+                        if (is_null($objToken)) {
+                            throw new \Exception("O caractere {$this->getStrCharacter()} nao esta previsto na linguagem de consulta. Comando analisado: [{$this->getStrInput()}].");
+                        }
                         break;
                 }
             }
-        }
-        switch ($objToken->getNumType()) {
-            case self::SELECT:
-                $this->numContextClause = self::SELECT;
-                break;
-            case self::FROM:
-                $this->numContextClause = self::FROM;
-                break;
-            case self::WHERE:
-                $this->numContextClause = self::WHERE;
-                break;
         }
         $this->objPreviousToken = new Token($objToken->getNumType(), $objToken->getStrText());
         return $objToken;
@@ -128,24 +129,12 @@ class InfraQlLexer extends Lexer
 
     public function isLetter(): bool
     {
-        return (
-            (
-                ord($this->getStrCharacter()) >= 65
-                && ord($this->getStrCharacter()) <= 90
-            )
-            || (
-                ord($this->getStrCharacter()) >= 97
-                && ord($this->getStrCharacter()) <= 122
-            )
-        );
+        return ((ord($this->getStrCharacter()) >= 65 && ord($this->getStrCharacter()) <= 90) || (ord($this->getStrCharacter()) >= 97 && ord($this->getStrCharacter()) <= 122));
     }
 
     public function isNumber(): bool
     {
-        return (
-            ord($this->getStrCharacter()) >= 48
-            && ord($this->getStrCharacter()) <= 57
-        );
+        return (ord($this->getStrCharacter()) >= 48 && ord($this->getStrCharacter()) <= 57);
     }
 
     public function getObjPreviousToken(): Token

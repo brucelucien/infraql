@@ -3,6 +3,7 @@ namespace InfraQL;
 
 class DtoBuilder
 {
+
     private $strInfraQuery = "";
 
     private $strNomeDto = "";
@@ -34,9 +35,13 @@ class DtoBuilder
         $strCamposARetornar = trim($strCamposARetornar);
         if (strlen($strCamposARetornar) > 0) {
             $this->arrCamposARetornar = explode(",", $strCamposARetornar);
-            $this->arrCamposARetornar = array_map(function ($campo) {return trim($campo);}, $this->arrCamposARetornar);
+            $this->arrCamposARetornar = array_map(function ($campo) {
+                return trim($campo);
+            }, $this->arrCamposARetornar);
         } else {
-            $this->arrCamposARetornar = array(Constantes::CARACTER_ASTERISCO);
+            $this->arrCamposARetornar = array(
+                Constantes::CARACTER_ASTERISCO
+            );
         }
     }
 
@@ -57,7 +62,6 @@ class DtoBuilder
         } else {
             $this->arrGrupos[] = (new ConsumoTextoBrutoGrupoCondicao())->consumir($this->strInfraQuery, $this->arrParametrosInformados);
         }
-
     }
 
     private function clausulaWhereFoiInformada()

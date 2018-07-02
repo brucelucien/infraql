@@ -3,9 +3,10 @@ namespace InfraQL;
 
 abstract class Lexer
 {
-    const EOF = "\0";
 
-    const EOF_TYPE = 1;
+    public const EOF = "\0";
+
+    public const EOF_TYPE = 1;
 
     private $strInput;
 
@@ -38,7 +39,7 @@ abstract class Lexer
 
     public function consume(): void
     {
-        $this->numPosition++;
+        $this->numPosition ++;
         if ($this->numPosition >= strlen($this->strInput)) {
             $this->strCharacter = self::EOF;
         } else {

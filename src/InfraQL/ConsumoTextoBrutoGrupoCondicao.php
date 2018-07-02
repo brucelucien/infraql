@@ -3,6 +3,7 @@ namespace InfraQL;
 
 class ConsumoTextoBrutoGrupoCondicao
 {
+
     public function consumir($strTextoBruto, $arrParametrosInformados)
     {
         $novoGrupo = new GrupoCondicao();

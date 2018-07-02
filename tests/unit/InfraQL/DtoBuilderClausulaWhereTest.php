@@ -143,7 +143,6 @@ QUERY;
 QUERY;
         $builder = new DtoBuilder($query);
         $dto = $builder->gerarDto();
-        // Operadores de comparação
         $this->assertEquals('<>', $dto->getVarOperadoresAtributos()[0]);
         $this->assertEquals('=', $dto->getVarOperadoresAtributos()[1]);
         $this->assertEquals('<>', $dto->getVarOperadoresAtributos()[2]);
@@ -239,25 +238,5 @@ QUERY;
         $this->assertEquals('CRITERIO_0', $dto->getArrNomesCriterios()[0]);
         $this->assertEquals('CRITERIO_1', $dto->getArrNomesCriterios()[1]);
     }
-
-//     public function testDeveMapearComParentesesUsandoAdicionarCriterioValores()
-//     {
-//         $query = <<<QUERY
-//             SELECT
-//                 *
-//             FROM
-//                 FakeClass\LocalInstalacaoEprocDTO
-//             WHERE
-//                 (StrSigUf <> 'RS')
-//                 OR (StrTipoContexto = 'D')
-//                 AND (StrTipoInstancia <> 'EST1')
-//                 OR (StrTipoAmbiente = 'PN')
-// QUERY;
-//         $builder = new DtoBuilder($query);
-//         $dto = $builder->gerarDto();
-//         $this->assertEquals('RS', $dto->getVarValoresAtributos()[0]);
-//         $this->assertEquals('D', $dto->getVarValoresAtributos()[1]);
-//         $this->assertEquals('EST1', $dto->getVarValoresAtributos()[2]);
-//     }
 
 }

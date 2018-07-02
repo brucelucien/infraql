@@ -3,6 +3,7 @@ namespace InfraQL;
 
 class TokenTest extends \Codeception\Test\Unit
 {
+
     protected $objToken;
 
     protected function _before()
@@ -24,7 +25,7 @@ class TokenTest extends \Codeception\Test\Unit
 
     public function testTypeIniciaComMenos1()
     {
-        $this->assertEquals(-1, $this->objToken->getNumType());
+        $this->assertEquals(- 1, $this->objToken->getNumType());
     }
 
     public function testDeveTerText()
@@ -47,5 +48,4 @@ class TokenTest extends \Codeception\Test\Unit
         $this->assertEquals($numType, $objToken->getNumType());
         $this->assertEquals($strText, $objToken->getStrText());
     }
-
 }

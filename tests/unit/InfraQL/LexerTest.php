@@ -3,14 +3,15 @@ namespace InfraQL;
 
 class LexerTest extends \Codeception\Test\Unit
 {
+
     private const EXEMPLO_INPUT = "SELECT StrNome, NumIdade FROM PessoaDTO WHERE StrNome = 'Donald Knuth'";
 
     protected $objLexer;
 
     private function criarInstanciaLexerComInputPreenchido()
     {
-        return new class(self::EXEMPLO_INPUT) extends Lexer
-        {
+        return new class(self::EXEMPLO_INPUT) extends Lexer {
+
             public function getObjNextToken(): Token
             {
                 return null;
@@ -20,8 +21,8 @@ class LexerTest extends \Codeception\Test\Unit
 
     private function criarInstanciaLexerComInputVazio()
     {
-        return new class("") extends Lexer
-        {
+        return new class("") extends Lexer {
+
             public function getObjNextToken(): Token
             {
                 return null;
@@ -51,7 +52,8 @@ class LexerTest extends \Codeception\Test\Unit
 
     public function testSeInputVazioCaractereDeveSerVazio()
     {
-        $this->assertEquals("", $this->criarInstanciaLexerComInputVazio()->getStrCharacter());
+        $this->assertEquals("", $this->criarInstanciaLexerComInputVazio()
+            ->getStrCharacter());
     }
 
     public function testAoInstanciarPosicaoAtualDeveSerZero()
@@ -87,7 +89,7 @@ class LexerTest extends \Codeception\Test\Unit
 
     public function testCaractereDeveSerEofSeConsumirTodaOInput()
     {
-        for ($cont = 1; $cont <= strlen($this->objLexer->getStrInput()); $cont++) {
+        for ($cont = 1; $cont <= strlen($this->objLexer->getStrInput()); $cont ++) {
             $this->objLexer->consume();
         }
         $this->assertEquals(Lexer::EOF, $this->objLexer->getStrCharacter());
@@ -103,8 +105,8 @@ class LexerTest extends \Codeception\Test\Unit
             $this->assertEquals("Esperava o caractere 'E' mas obteve o caractere 'X'.", $e->getMessage());
             $bolExcecaoLancada = true;
         }
-        if (!$bolExcecaoLancada) {
-            $this->fail("Uma exceção deve ser lançada.");
+        if (! $bolExcecaoLancada) {
+            $this->fail("Uma excecao deve ser lancada.");
         }
     }
 

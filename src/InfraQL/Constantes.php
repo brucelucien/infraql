@@ -3,6 +3,7 @@ namespace InfraQL;
 
 class Constantes
 {
+
     const PARAMETRO_DEVE_USAR_DISTINCT = true;
 
     const CARACTER_DOIS_PONTOS = ":";

@@ -3,6 +3,7 @@ namespace InfraQL;
 
 class GrupoCondicao
 {
+
     private $arrCamposCondicao = array();
 
     private $arrOperadoresComparacao = array();
