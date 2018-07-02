@@ -15,11 +15,6 @@ class LexerTest extends \Codeception\Test\Unit
             {
                 return null;
             }
-
-            public function getStrTokenName(int $numTokenType): string
-            {
-                return "";
-            }
         };
     }
 
@@ -30,11 +25,6 @@ class LexerTest extends \Codeception\Test\Unit
             public function getObjNextToken(): Token
             {
                 return null;
-            }
-
-            public function getStrTokenName(int $numTokenType): string
-            {
-                return "";
             }
         };
     }

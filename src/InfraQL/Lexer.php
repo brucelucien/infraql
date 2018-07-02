@@ -15,8 +15,6 @@ abstract class Lexer
 
     abstract function getObjNextToken(): Token;
 
-    abstract function getStrTokenName(int $numTokenType): string;
-
     public function __construct(string $strInput)
     {
         $this->strInput = $strInput;
