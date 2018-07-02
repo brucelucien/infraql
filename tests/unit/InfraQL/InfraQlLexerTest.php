@@ -166,7 +166,7 @@ class InfraQlLexerTest extends \Codeception\Test\Unit
 
     public function testOUltimoTokenLidoDeveIniciarComoVazio()
     {
-        $this->assertEquals(InfraQlLexer::VOID, $this->objInfraQlLexer->getObjPreviousToken()->getNumType());
+        $this->assertEquals(InfraQlLexer::BOF, $this->objInfraQlLexer->getObjPreviousToken()->getNumType());
         $this->assertEquals("", $this->objInfraQlLexer->getObjPreviousToken()->getStrText());
     }
 

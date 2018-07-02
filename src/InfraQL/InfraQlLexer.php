@@ -13,7 +13,7 @@ class InfraQlLexer extends Lexer
 
     public const DTO_NAME = 6;
 
-    public const VOID = 7;
+    public const BOF = 7;
 
     public const WHERE = 8;
 
@@ -117,7 +117,7 @@ class InfraQlLexer extends Lexer
     public function getObjPreviousToken(): Token
     {
         if (is_null($this->objPreviousToken)) {
-            return new Token(self::VOID, "");
+            return new Token(self::BOF, "");
         } else {
             return $this->objPreviousToken;
         }
