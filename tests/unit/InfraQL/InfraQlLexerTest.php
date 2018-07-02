@@ -230,7 +230,7 @@ class InfraQlLexerTest extends \Codeception\Test\Unit
             $objInfraQlLexer->getObjNextToken();
         } catch (\Exception $e) {
             $bolExcecaoLancada = true;
-            $this->assertEquals("O comando InfraQL contém texto não previsto na linguagem de consulta.", $e->getMessage());
+            $this->assertEquals("O comando InfraQL contem texto nao previsto na linguagem de consulta. Comando analisado: [AWEF3242F2F242RE2R2F22F342F2234].", $e->getMessage());
         }
         if (!$bolExcecaoLancada) {
             $this->fail("Uma exceção deve ser lançada.");

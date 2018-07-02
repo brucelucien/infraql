@@ -102,7 +102,7 @@ class InfraQlLexer extends Lexer
                                         }
                                     }
                                     if (is_null($objToken)) {
-                                        throw new \Exception("O comando InfraQL contém texto não previsto na linguagem de consulta.");
+                                        throw new \Exception("O comando InfraQL contem texto nao previsto na linguagem de consulta. Comando analisado: [{$this->getStrInput()}].");
                                     }
                                     break;
                             }
