@@ -58,6 +58,23 @@ class InfraQlLexer extends Lexer
                         $this->consume();
                         if ($this->getStrCharacter() == "=") {
                             $objToken = new Token(InfraQlTokenType::GREATER_THAN_OR_EQUAL_TO, ">=");
+                        } else {
+                            $objToken = new Token(InfraQlTokenType::GREATER_THAN, ">");
+                        }
+                        $this->consume();
+                        break;
+                    case "<":
+                        $this->consume();
+                        switch ($this->getStrCharacter()) {
+                            case "=":
+                                $objToken = new Token(InfraQlTokenType::LESS_THAN_OR_EQUAL_TO, "<=");
+                                break;
+                            case ">":
+                                $objToken = new Token(InfraQlTokenType::NOT_EQUAL_TO, "<>");
+                                break;
+                            default:
+                                $objToken = new Token(InfraQlTokenType::LESS_THAN, "<");
+                                break;
                         }
                         $this->consume();
                         break;
@@ -91,6 +108,9 @@ class InfraQlLexer extends Lexer
                                     break;
                                 case "AND":
                                     $objToken = new Token(InfraQlTokenType::LOGICAL_OPERATOR_AND, $strText);
+                                    break;
+                                case "OR":
+                                    $objToken = new Token(InfraQlTokenType::LOGICAL_OPERATOR_OR, $strText);
                                     break;
                                 case "ORDER":
                                     $strText .= $this->getStrCharacter();

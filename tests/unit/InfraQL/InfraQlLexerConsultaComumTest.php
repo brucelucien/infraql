@@ -4,7 +4,7 @@ namespace InfraQL;
 class InfraQlLexerConsultaComumTest extends \Codeception\Test\Unit
 {
 
-    private const EXEMPLO_INPUT = <<<INFRAQL
+    private const EXEMPLO_INPUT = "
         \t
         SELECT
             StrNome,
@@ -17,7 +17,7 @@ class InfraQlLexerConsultaComumTest extends \Codeception\Test\Unit
         ORDER BY
             StrNome,
             NumIdade
-INFRAQL;
+    ";
 
     protected $objInfraQlLexer;
 

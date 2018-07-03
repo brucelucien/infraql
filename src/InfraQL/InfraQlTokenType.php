@@ -33,5 +33,15 @@ class InfraQlTokenType
     public const PARENTHESES_RIGHT = 15;
 
     public const ORDER_BY = 16;
+
+    public const LOGICAL_OPERATOR_OR = 17;
+
+    public const GREATER_THAN = 18;
+
+    public const LESS_THAN = 19;
+
+    public const LESS_THAN_OR_EQUAL_TO = 20;
+
+    public const NOT_EQUAL_TO = 21;
 }
 
