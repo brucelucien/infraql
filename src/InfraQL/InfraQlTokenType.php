@@ -43,5 +43,6 @@ class InfraQlTokenType
     public const LESS_THAN_OR_EQUAL_TO = 20;
 
     public const NOT_EQUAL_TO = 21;
+
 }
 
