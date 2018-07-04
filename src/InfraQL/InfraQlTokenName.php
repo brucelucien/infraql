@@ -29,6 +29,9 @@ class InfraQlTokenName
 
     public static function getStrName(int $numTokenType): string
     {
+        if (! isset(InfraQlTokenName::NAMES[$numTokenType])) {
+            throw new \Exception(sprintf("Nao ha nome definido para o tipo de token '%s'.", $numTokenType));
+        }
         return InfraQlTokenName::NAMES[$numTokenType];
     }
 }

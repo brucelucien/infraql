@@ -4,22 +4,32 @@ namespace InfraQL;
 class InfraQlTokenNameTest extends \Codeception\Test\Unit
 {
 
-    private $objLexer;
-
     protected function _before()
-    {
-        $this->objLexer = new InfraQlLexer("");
-    }
+    {}
 
     protected function _after()
-    {
-        $this->objLexer = null;
-    }
+    {}
 
     public function testDeveRetornarOsNomesCorretosDosTokens()
     {
-        $this->assertEquals(InfraQlTokenName::NAMES[InfraQlTokenType::SELECT], InfraQlTokenName::getStrName(InfraQlTokenType::SELECT));
-        $this->assertEquals(InfraQlTokenName::NAMES[InfraQlTokenType::FROM], InfraQlTokenName::getStrName(InfraQlTokenType::FROM));
-        $this->assertEquals(InfraQlTokenName::NAMES[InfraQlTokenType::ORDER_BY], InfraQlTokenName::getStrName(InfraQlTokenType::ORDER_BY));
+        foreach (InfraQlTokenName::NAMES as $numIndice => $strName) {
+            $this->assertEquals($strName, InfraQlTokenName::getStrName($numIndice));
+        }
+    }
+
+    public function testTokenNaoEncontradoDeveRetornarErro()
+    {
+        $intTokenTypeInvalido = 7019824712;
+        $bolExcecaoLancada = false;
+        try {
+            InfraQlTokenName::getStrName($intTokenTypeInvalido);
+        } catch (\Exception $e) {
+            $bolExcecaoLancada = true;
+            $strMensagemErro = sprintf("Nao ha nome definido para o tipo de token '%s'.", $intTokenTypeInvalido);
+            $this->assertEquals($strMensagemErro, $e->getMessage());
+        }
+        if (! $bolExcecaoLancada) {
+            $this->fail("Uma excecao deve ser lancada.");
+        }
     }
 }
